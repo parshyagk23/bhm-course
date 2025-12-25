@@ -1,0 +1,95 @@
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { User, LogIn, LogOut } from "lucide-react";
+
+const Navbar = ({ isAuthenticated, onLogout }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const NavLink = ({ to, label }) => {
+    const isActive = location.pathname === to;
+    return (
+      <Link
+        to={to}
+        className={`px-3 py-2 text-sm font-semibold transition-colors ${isActive
+          ? "text-[#2D61A1] border-b-2 border-[#2D61A1]"
+          : "text-slate-600 hover:text-[#2D61A1]"
+          }`}
+      >
+        {label}
+      </Link>
+    );
+  };
+
+  const handleLogout = () => {
+    onLogout();
+    navigate("/login");
+  };
+
+  return (
+    <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-20 items-center">
+
+          {/* Logo */}
+          <Link to="/" className="flex items-center">
+            <div className="w-10 h-10 bg-[#0D2A4A] rounded-lg flex items-center justify-center text-white font-bold text-xl mr-2 shadow-lg shadow-blue-900/10">
+              B
+            </div>
+            <span className="text-xl font-black text-[#0D2A4A] tracking-tighter hidden sm:block">
+              BHAVANAM
+            </span>
+          </Link>
+
+          {/* Desktop Nav */}
+
+
+          {/* Right Actions */}
+          <div className="flex  items-center gap-5" >
+
+            <div className="hidden md:flex items-end space-x-6">
+              <NavLink to="/" label="Home" />
+              <NavLink to="/store" label="Store" />
+              {isAuthenticated && <NavLink to="/my-courses" label="My Courses" />}
+            </div>
+            <div className="flex items-center gap-4">
+              {isAuthenticated ? (
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-all border border-slate-200"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#2D61A1] flex items-center justify-center text-white shadow-sm">
+                      <User size={16} />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 hidden sm:inline">
+                      Profile
+                    </span>
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                    title="Logout"
+                  >
+                    <LogOut size={20} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-[#0D2A4A] text-white rounded-xl hover:bg-[#1a3a5a] transition-all font-bold shadow-lg shadow-blue-900/10 active:scale-95"
+                >
+                  <LogIn size={18} />
+                  <span>Login</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
