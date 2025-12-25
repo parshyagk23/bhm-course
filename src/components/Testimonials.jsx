@@ -38,25 +38,22 @@ const feedbacks = [
 
 const Testimonials = () => {
     return (
-        <div className=" px-2 rounded-2xl border border-slate-100 max-w-4xl mx-auto" >
-            <div className="mb-8">
+        <div className="px-4 sm:px-2 rounded-2xl border border-slate-100 max-w-4xl mx-auto">
+            <div className="mb-6 sm:mb-8 text-center">
                 <div className="text-[#2D61A1] text-[10px] font-black uppercase tracking-[0.3em] mb-1">
                     TESTIMONIALS
                 </div>
-                <h3 className="text-3xl font-black text-[#0D2A4A] tracking-tight">
+                <h3 className="text-2xl sm:text-3xl font-black text-[#0D2A4A] tracking-tight">
                     See What Our Students Say
                 </h3>
             </div>
 
-            {/* Horizontal Scroll Container */}
-            <div className="w-[100%] flex flex-nowrap gap-6 overflow-x-auto py-4
-                scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+            {/* Horizontal Scroll Container with snap */}
+            <div className="w-full flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
                 {feedbacks.map((f, i) => (
                     <div
                         key={i}
-                        className="bg-slate-50 w-[300px] shrink-0 p-6 rounded-2xl 
-             border border-slate-100 flex flex-col gap-4 
-             transition-all hover:bg-slate-100/50"
+                        className="bg-slate-50 flex-shrink-0 w-[80%] sm:w-[300px] snap-center p-4 sm:p-6 rounded-2xl border border-slate-100 flex flex-col gap-4 transition-all hover:bg-slate-100/50"
                     >
                         {/* Header: Photo + Name */}
                         <div className="flex items-start gap-3">
@@ -65,36 +62,26 @@ const Testimonials = () => {
                                 alt={f.name}
                                 className="w-10 h-10 rounded-full object-cover border border-slate-200"
                             />
-
-                            <div className="flex flex-col items-start" >
+                            <div className="flex flex-col items-start">
                                 <div className="font-bold text-slate-900">{f.name}</div>
-                                <div className="text-xs text-[#2D61A1] font-medium">
-                                    {f.company}
-                                </div>
+                                <div className="text-xs text-[#2D61A1] font-medium">{f.company}</div>
                             </div>
                         </div>
 
-                        {/* Quote Icon */}
-                        {/* <div className="w-10 h-10 bg-[#2D61A1] rounded-full flex items-center justify-center text-white">
-                            <Quote size={18} fill="currentColor" />
-                        </div> */}
-
                         {/* Feedback */}
-                        <p className="text-slate-600 italic text-sm leading-relaxed">
+                        <p className="text-slate-600 italic text-sm sm:text-base leading-relaxed">
                             "{f.text}"
                         </p>
 
                         {/* Course Enrolled */}
-                        <div className="mt-0 ">
+                        <div>
                             <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
                                 {f.course}
                             </span>
                         </div>
                     </div>
-
                 ))}
             </div>
-
         </div>
     );
 }

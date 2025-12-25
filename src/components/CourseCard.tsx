@@ -40,11 +40,11 @@ const CourseCard = ({ course }) => {
         <div className="flex items-center gap-4 text-xs text-slate-500 mb-5">
           <div className="flex items-center gap-1">
             <PlayCircle size={14} className="text-[#2D61A1]" />
-            <span>0 VIDEOS</span>
+            <span>{course?.videoCount} VIDEOS</span>
           </div>
           <div className="flex items-center gap-1">
             <FileText size={14} className="text-[#2D61A1]" />
-            <span>0 FREE CONTENT</span>
+            <span>1 FREE CONTENT</span>
           </div>
         </div>
 

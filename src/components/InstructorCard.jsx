@@ -43,17 +43,18 @@ const InstructorCard = () => {
     const instructor = instructors[currentIndex];
 
     return (
-        <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 max-w-4xl mx-auto">
-            <div className="mb-8">
-                <h3 className="text-2xl font-black text-[#0D2A4A] tracking-tight">
+        <div className="bg-slate-50 p-3 sm:p-8 rounded-2xl border border-slate-100 max-w-4xl mx-auto">
+            <div className="mb-6 sm:mb-8">
+                <h3 className="text-xl sm:text-2xl font-black text-[#0D2A4A] tracking-tight">
                     About Course Creator
                 </h3>
             </div>
 
-            <div className="flex items-center gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-3 bg-white p-4 sm:p-3 rounded-xl border border-slate-200 shadow-sm">
+
                 {/* LEFT: IMAGE */}
                 <div className="shrink-0">
-                    <div className="w-36 h-36 rounded-full border-4 border-slate-200 overflow-hidden shadow-md">
+                    <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full border-4 border-slate-200 overflow-hidden shadow-md">
                         <img
                             src={instructor.image}
                             alt={instructor.name}
@@ -63,33 +64,33 @@ const InstructorCard = () => {
                 </div>
 
                 {/* RIGHT: CONTENT */}
-                <div className="flex flex-col items-start space-y-2">
-                    <h4 className="text-xl font-extrabold text-slate-900 uppercase">
+                <div className="flex flex-col items-center sm:items-start space-y-2 text-center sm:text-left">
+                    <h4 className="text-lg sm:text-xl font-extrabold text-slate-900 uppercase">
                         {instructor.name}
                     </h4>
 
-                    <div className="text-sm font-bold text-[#2D61A1] uppercase tracking-wide">
+                    <div className="text-xs sm:text-sm font-bold text-[#2D61A1] uppercase tracking-wide">
                         {instructor.designation}
                     </div>
 
                     {instructor.experience && (
-                        <span className="inline-block bg-blue-50 text-[#2D61A1] text-xs font-bold rounded-full border border-blue-100 px-3 py-1">
+                        <span className="inline-block bg-blue-50 text-[#2D61A1] text-xs font-bold rounded-full border border-blue-100 px-2 sm:px-3 py-1">
                             {instructor.experience}
                         </span>
                     )}
 
                     {instructor.bio && (
-                        <p className="text-slate-600 text-left text-sm leading-relaxed max-w-2xl">
+                        <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-2xl">
                             {instructor.bio}
                         </p>
                     )}
 
                     {instructor.skills?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 pt-2">
+                        <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
                             {instructor.skills.map((skill) => (
                                 <span
                                     key={skill}
-                                    className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold"
+                                    className="px-2 sm:px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs sm:text-xs font-semibold"
                                 >
                                     {skill}
                                 </span>
@@ -104,12 +105,12 @@ const InstructorCard = () => {
                 {instructors.map((_, idx) => (
                     <span
                         key={idx}
-                        className={`w-3 h-3 rounded-full transition-colors ${idx === currentIndex ? "bg-[#2D61A1]" : "bg-slate-300"
-                            }`}
+                        className={`w-3 h-3 rounded-full transition-colors ${idx === currentIndex ? "bg-[#2D61A1]" : "bg-slate-300"}`}
                     />
                 ))}
             </div>
         </div>
+
     );
 };
 
