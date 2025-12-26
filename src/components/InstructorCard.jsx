@@ -43,10 +43,14 @@ const InstructorCard = () => {
     const instructor = instructors[currentIndex];
 
     return (
-        <div className="bg-slate-50 p-3 sm:p-8 rounded-2xl border border-slate-100 max-w-4xl mx-auto">
-            <div className="mb-6 sm:mb-8">
-                <h3 className="text-xl sm:text-2xl font-black text-[#0D2A4A] tracking-tight">
-                    About Course Creator
+        <div className="bg-slate-50  rounded-2xl border border-slate-100 max-w-4xl mx-auto">
+
+            <div className="mb-6 sm:mb-8 text-left">
+                <div className="text-[#2D61A1] text-[10px] font-black uppercase tracking-[0.3em] mb-1">
+                    LEARN FOR THE BEST
+                </div>
+                <h3 className="text-2xl sm:text-2xl font-black text-[#0D2A4A] tracking-tight">
+                    Our World-Class Instructors
                 </h3>
             </div>
 
@@ -85,18 +89,7 @@ const InstructorCard = () => {
                         </p>
                     )}
 
-                    {instructor.skills?.length > 0 && (
-                        <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
-                            {instructor.skills.map((skill) => (
-                                <span
-                                    key={skill}
-                                    className="px-2 sm:px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs sm:text-xs font-semibold"
-                                >
-                                    {skill}
-                                </span>
-                            ))}
-                        </div>
-                    )}
+
                 </div>
             </div>
 

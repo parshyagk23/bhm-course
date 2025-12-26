@@ -231,7 +231,7 @@ const Dashboard = () => {
                   </div>
 
                   {/* Card 2: Schedule Meeting */}
-                  <div className="bg-white rounded-3xl p-8 pt-16 relative shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                  {/* <div className="bg-white rounded-3xl p-8 pt-16 relative shadow-sm border border-slate-100 flex flex-col items-center text-center">
                      <div className="absolute -top-12 w-24 h-24 bg-blue-100/60 rounded-full flex items-center justify-center p-2">
                         <div className="w-full h-full bg-[#0D2A4A] rounded-full flex items-center justify-center text-white shadow-xl border-4 border-white">
                            <Users size={40} />
@@ -243,10 +243,10 @@ const Dashboard = () => {
                      <button className="mt-auto px-6 py-2.5 bg-[#1E293B] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-[#2D61A1] transition-all shadow-md">
                         Schedule Meeting <Calendar size={18} />
                      </button>
-                  </div>
+                  </div> */}
 
                   {/* Card 3: Upload Resume */}
-                  <div className="bg-white rounded-3xl p-8 pt-16 relative shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                  {/* <div className="bg-white rounded-3xl p-8 pt-16 relative shadow-sm border border-slate-100 flex flex-col items-center text-center">
                      <div className="absolute -top-12 w-24 h-24 bg-blue-100/60 rounded-full flex items-center justify-center p-2">
                         <div className="w-full h-full bg-[#0D2A4A] rounded-full flex items-center justify-center text-white shadow-xl border-4 border-white">
                            <FileUser size={40} />
@@ -258,7 +258,7 @@ const Dashboard = () => {
                      <button className="mt-auto px-6 py-2.5 bg-[#1E293B] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-[#2D61A1] transition-all shadow-md">
                         Upload Resume <Upload size={18} />
                      </button>
-                  </div>
+                  </div> */}
                </div>
             </div>
          </div>

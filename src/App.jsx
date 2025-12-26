@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import { Toaster } from "react-hot-toast";
+import DashboardCopy from "./pages/Dashboardcopy";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -31,6 +32,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("uid");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
   };
 
@@ -41,8 +43,8 @@ function App() {
 
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/store" element={<Store />} />
+          {/* <Route path="/" element={<Landing />} /> */}
+          <Route path="/" element={<Store />} />
           <Route path="/course/:id" element={<CourseDetail />} />
 
           <Route
@@ -59,7 +61,7 @@ function App() {
           <Route
             path="/my-courses"
             element={
-              isAuthenticated ? <Dashboard /> : <Navigate to="/login" />
+              isAuthenticated ? <DashboardCopy /> : <Navigate to="/login" />
             }
           />
 

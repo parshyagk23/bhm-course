@@ -39,11 +39,11 @@ const feedbacks = [
 const Testimonials = () => {
     return (
         <div className="px-4 sm:px-2 rounded-2xl border border-slate-100 max-w-4xl mx-auto">
-            <div className="mb-6 sm:mb-8 text-center">
+            <div className="mb-6 sm:mb-8 text-left">
                 <div className="text-[#2D61A1] text-[10px] font-black uppercase tracking-[0.3em] mb-1">
                     TESTIMONIALS
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-[#0D2A4A] tracking-tight">
+                <h3 className="text-2xl sm:text-2xl font-black text-[#0D2A4A] tracking-tight">
                     See What Our Students Say
                 </h3>
             </div>

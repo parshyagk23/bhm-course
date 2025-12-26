@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Play, CheckCircle, Clock, ShieldCheck,
-  ChevronRight, Calendar, ShoppingCart, Tag, AlertCircle,
+  CheckCircle, Clock, ShieldCheck,
+  ChevronRight, Calendar, ShoppingCart,
   Phone, Mail, MapPin,
 } from 'lucide-react';
 import { getCourseByName } from '../services/course';
@@ -12,6 +12,8 @@ import CourseOverview from '../components/CourseOverview';
 import CertificateSection from '../components/CertificateSection';
 import VideoContent from '../components/VideoContent';
 import ResourceContent from '../components/ResourceContent';
+import { getCoupon } from '../services/coupon';
+import PricingSidebar from '../components/PricingSidebar';
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -21,6 +23,7 @@ const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPricingDrawer, setShowPricingDrawer] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const fetchCourseDetails = async () => {
     try {
@@ -46,16 +49,8 @@ const CourseDetail = () => {
   };
 
   const descriptionList = parseCourseDescription(course?.courseDescription);
-  const pricing = course?.pricing || {};
 
-  const sellingPrice = pricing?.sellingPrice || 0;
-  const mrp = pricing.mrp || sellingPrice;
-  const discountPercentage =
-    mrp > 0 ? Math.round(((mrp - sellingPrice) / mrp) * 100) : 0;
 
-  const handlingCharges = pricing.internetHandlingCharges || 0;
-  const gstAmount = Math.round((sellingPrice * (pricing.gstPercentage || 0)) / 100);
-  const totalPayable = sellingPrice + handlingCharges + gstAmount;
 
   const tabs = [
     { key: "overview", label: "Overview" },
@@ -64,6 +59,46 @@ const CourseDetail = () => {
     { key: "quizzes", label: "Quizzes" },
   ];
 
+  // Inside CourseDetail component
+
+  // 1. Basic Pricing Stats (Keep these)
+  const pricing = course?.pricing || {};
+  const sellingPrice = pricing?.sellingPrice || 0;
+  const mrp = pricing.mrp || sellingPrice;
+  const discountPercentage = mrp > 0 ? Math.round(((mrp - sellingPrice) / mrp) * 100) : 0;
+
+  // 1. Calculate Coupon Discount
+  const calculateDiscount = () => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.discountType === 'flat') {
+      return appliedCoupon.flatDiscount.amount;
+    }
+    const percentageOff = (sellingPrice * appliedCoupon.percentageDiscount.percentage) / 100;
+    return Math.min(percentageOff, appliedCoupon.percentageDiscount.maxDiscountAmount);
+  };
+
+  const discountAmount = calculateDiscount();
+
+  // 1. Final Selling Price (Keep as Number)
+  const finalSellingPrice = Math.max(0, sellingPrice - discountAmount);
+
+  // 2. Handling Charges (2.5%) (Keep as Number)
+  const handlingCharges = (finalSellingPrice * 2.5) / 100;
+
+  // 3. GST Calculations (Keep as Numbers - remove .toFixed here)
+  const courseGstAmount = (finalSellingPrice * (pricing?.gstPercentage || 0)) / 100;
+  const handlingGstAmount = (handlingCharges * 18) / 100;
+
+  // 4. Total GST (Keep as Number)
+  const totalGst = courseGstAmount + handlingGstAmount;
+
+  // 5. Final Sum
+  const rawTotal = finalSellingPrice + handlingCharges + totalGst;
+
+  // 6. Formatting for display (ONLY at the end)
+  const totalPayable = rawTotal.toFixed(2);
+
+  console.log(totalPayable);
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 p-4">
@@ -90,7 +125,7 @@ const CourseDetail = () => {
               <div className="flex items-center gap-2 text-xs font-bold text-[#2D61A1] tracking-widest uppercase">
                 Course <ChevronRight size={14} /> {course?.category[0]}
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-[#0D2A4A]">{course?.courseName}</h1>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-[#0D2A4A] uppercase">{course?.courseName}</h1>
               <p className="text-slate-600 text-lg leading-relaxed font-semibold">
                 LEARN HOW TO PREPARE YOUR OWN ARCHITECTURAL PLANS
               </p>
@@ -151,7 +186,36 @@ const CourseDetail = () => {
                     <CertificateSection />
                     <Testimonials />
                     {/* Request Callback & Get In Touch Section */}
-                    {/* ... keep your existing callback & get-in-touch code ... */}
+                    <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm mt-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12"> {/* Request a Callback */}
+                        <div className="space-y-8"> <h3 className="text-2xl font-extrabold text-[#0D2A4A]">Request a Callback</h3>
+                          <div className="space-y-4"> {["Connect with our team", "Resolve issues quickly",
+                            "Get answers to your queries",
+                            "Discuss details about courses",
+                            "Receive personalized guidance"].map((item, i) =>
+                            (<div key={i} className="flex items-center gap-3">
+                              <div className="text-green-500 shrink-0"> <CheckCircle size={24} /> </div>
+                              <span className="text-lg font-medium text-slate-700">{item}</span> </div>))}
+                          </div> <button className="flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-2 bg-[#D9534F] text-white rounded-xl font-bold hover:bg-[#c94b48] transition-all shadow-lg text-lg">
+                            <Phone size={22} className="fill-white" /> Book Appointment Now </button>
+                        </div> {/* Get In Touch */} <div className="space-y-4"> <div>
+                          <h3 className="text-2xl font-extrabold text-[#0D2A4A] mb-2">Get In Touch</h3>
+                          <p className="text-slate-500 font-medium text-lg">Feel free to reach out to us, we're here to help you.</p> </div>
+                          <div className="space-y-2"> <div className="flex items-center gap-2">
+                            <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <Phone size={24} /> </div>
+                            <div> <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Call Us</div>
+                              <div className="text-[16px] font-semibold text-left text-slate-900">+91 9110-363-544</div> </div>
+                          </div> <div className="flex items-center gap-4"> <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <Mail size={24} /> </div>
+                              <div> <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Email Us</div>
+                                <div className="text-[16px] font-semibold text-left text-slate-900">info@bhavanamsc2c.com</div> </div> </div>
+                            <div className="flex items-start gap-4"> <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <MapPin size={24} /> </div>
+                              <div> <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Location</div>
+                                <div className="text-[16px] font-semibold text-left text-slate-900 leading-tight"> 16-2-755/8/C, H.S.Meadows, Gaddlannaram, Dilshukhnagar, Hyderabad, Telangana - 500060 </div> </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </>
                 )}
 
@@ -183,14 +247,54 @@ const CourseDetail = () => {
               sellingPrice={sellingPrice}
               mrp={mrp}
               discountPercentage={discountPercentage}
-              handlingCharges={handlingCharges}
-              gstAmount={gstAmount}
+              handlingCharges={handlingCharges.toFixed(2)}
+              gstAmount={totalGst.toFixed(2)}
               totalPayable={totalPayable}
               isInstallmentMode={isInstallmentMode}
               setIsInstallmentMode={setIsInstallmentMode}
               setShowCouponModal={setShowCouponModal}
+              appliedCoupon={appliedCoupon}   // New
+              setAppliedCoupon={setAppliedCoupon}
+              discountAmount={discountAmount}
             />
+            <div className="bg-slate-900 text-white p-6 rounded-2xl space-y-4">
+              <h4 className="font-bold flex items-center gap-2">
+                <CheckCircle size={18} className="text-green-500" />
+                What's included:
+              </h4>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2D61A1] mt-1.5"></div>
+                  Full lifetime access
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2D61A1] mt-1.5"></div>
+                  ISO Certified Certificate
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2D61A1] mt-1.5"></div>
+                  Downloadable resources
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2D61A1] mt-1.5"></div>
+                  Mobile and PC access
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2D61A1] mt-1.5"></div>
+                  Software Installation Support
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2D61A1] mt-1.5"></div>
+                  Live Doubts Clarification Sessions
+                </li>
+              </ul>
+            </div>
           </div>
+
+
+
+
+
         </div>
       </div>
 
@@ -226,11 +330,14 @@ const CourseDetail = () => {
               mrp={mrp}
               discountPercentage={discountPercentage}
               handlingCharges={handlingCharges}
-              gstAmount={gstAmount}
+              gstAmount={totalGst}
               totalPayable={totalPayable}
               isInstallmentMode={isInstallmentMode}
               setIsInstallmentMode={setIsInstallmentMode}
               setShowCouponModal={setShowCouponModal}
+              appliedCoupon={appliedCoupon}   // New
+              setAppliedCoupon={setAppliedCoupon}
+              discountAmount={discountAmount}
             />
           </div>
         </div>
@@ -238,7 +345,7 @@ const CourseDetail = () => {
 
       {/* Coupon Modal */}
       {showCouponModal && (
-        <CouponModal setShowCouponModal={setShowCouponModal} />
+        <CouponModal setShowCouponModal={setShowCouponModal} courseId={course?.courseId} setAppliedCoupon={setAppliedCoupon} />
       )}
     </div>
   );
@@ -246,151 +353,112 @@ const CourseDetail = () => {
 
 export default CourseDetail;
 
-// --- PricingSidebar Component ---
-const PricingSidebar = ({
-  course,
-  sellingPrice,
-  mrp,
-  discountPercentage,
-  handlingCharges,
-  gstAmount,
-  totalPayable,
-  isInstallmentMode,
-  setIsInstallmentMode,
-  setShowCouponModal
-}) => (
-  <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden space-y-6">
-    <div className="aspect-video relative">
-      <img
-        src={course?.thumbnailUrl}
-        className="w-full h-full object-cover"
-        alt="Preview"
-      />
-      <div className="absolute inset-0 bg-black/40 flex items-center justify-center group cursor-pointer">
-        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[#2D61A1] shadow-2xl group-hover:scale-110 transition-transform">
-          <Play size={24} fill="currentColor" />
-        </div>
-        <span className="absolute bottom-4 text-white font-bold text-sm tracking-widest uppercase">
-          Preview This Course
-        </span>
-      </div>
-    </div>
 
-    <div className="p-3 space-y-6">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-            Pricing Details
-          </span>
-          <button
-            onClick={() => setIsInstallmentMode(!isInstallmentMode)}
-            className={`text-xs font-bold px-3 py-1 rounded-full border transition-all ${isInstallmentMode
-              ? "bg-[#2D61A1] text-white border-[#2D61A1]"
-              : "text-slate-400 border-slate-200"
-              }`}
-          >
-            Installments Available
-          </button>
-        </div>
-
-        <div className="flex items-baseline gap-3">
-          <span className="text-4xl font-extrabold text-slate-900">
-            ₹{sellingPrice?.toLocaleString()}
-          </span>
-          {mrp > sellingPrice && (
-            <span className="text-lg text-slate-400 line-through">
-              ₹{mrp?.toLocaleString()}
-            </span>
-          )}
-          {discountPercentage > 0 && (
-            <span className="text-sm font-bold text-green-600 ml-auto">
-              Save {discountPercentage}%
-            </span>
-          )}
-        </div>
-
-        <div className="space-y-2 py-4 border-y border-slate-100">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Course Price</span>
-            <span className="font-medium text-slate-900">₹{sellingPrice.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Handling Charges</span>
-            <span className="font-medium text-slate-900">+ ₹{handlingCharges}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">GST ({course?.pricing?.gstPercentage || 0}%)</span>
-            <span className="font-medium text-slate-900">+ ₹{gstAmount}</span>
-          </div>
-          <div className="flex justify-between font-bold text-slate-900 pt-2 border-t border-dashed border-slate-200">
-            <span>Total Payable</span>
-            <span className="text-[#2D61A1]">₹{totalPayable.toLocaleString()}</span>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button className="w-full py-4 bg-[#0D2A4A] text-white rounded-xl font-extrabold text-lg flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all shadow-lg">
-            <ShoppingCart size={20} /> Buy Now
-          </button>
-          <button
-            onClick={() => setShowCouponModal(true)}
-            className="w-full py-3 bg-blue-50 text-[#2D61A1] rounded-xl font-bold flex items-center justify-center gap-2 border border-blue-100 hover:bg-blue-100 transition-all"
-          >
-            <Tag size={18} /> Have a coupon code?
-          </button>
-        </div>
-
-        {isInstallmentMode && (
-          <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-100 space-y-3">
-            <div className="flex items-center gap-2 text-yellow-800 font-bold text-sm">
-              <AlertCircle size={16} /> Pay in 2 Installments
-            </div>
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-semibold text-slate-600">
-                <span>1st Installment (Now)</span>
-                <span>₹779.19</span>
-              </div>
-              <div className="flex justify-between text-xs font-semibold text-slate-400">
-                <span>2nd Installment (After 2 wks)</span>
-                <span>₹779.19</span>
-              </div>
-            </div>
-            <button className="w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-xs hover:bg-yellow-600 transition-all">
-              Pay 1st Installment ₹779
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-);
 
 // --- CouponModal Component ---
-const CouponModal = ({ setShowCouponModal }) => (
-  <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowCouponModal(false)}></div>
-    <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-      <div className="p-3 border-b border-slate-100 flex items-center justify-between">
-        <h3 className="font-bold text-lg">Apply Coupons</h3>
-        <button onClick={() => setShowCouponModal(false)} className="text-slate-400 hover:text-slate-600">×</button>
-      </div>
-      <div className="p-3 space-y-6">
-        <div className="flex gap-2">
-          <input type="text" placeholder="Enter coupon code" className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#2D61A1] outline-none font-bold uppercase" />
-          <button className="px-6 py-3 bg-[#0D2A4A] text-white rounded-xl font-bold hover:bg-[#2D61A1] transition-all">APPLY</button>
+
+const CouponModal = ({ setShowCouponModal, courseId, setAppliedCoupon }) => {
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCoupons = async () => {
+    try {
+      // Logic to fetch based on your API
+      const response = await getCoupon(courseId);
+      // For this example, we'll assume 'response' is the array you provided
+      setCoupons(response);
+    } catch (error) {
+      console.error("Failed to fetch coupons", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoupons();
+  }, [courseId]);
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        onClick={() => setShowCouponModal(false)}
+      ></div>
+
+      <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        {/* Header */}
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-bold text-lg text-slate-800">Apply Coupons</h3>
+          <button
+            onClick={() => setShowCouponModal(false)}
+            className="text-slate-400 hover:text-slate-600 text-2xl"
+          >
+            &times;
+          </button>
         </div>
-        <div>
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Available Coupons</div>
-          <div className="p-4 border border-dashed border-blue-200 bg-blue-50 rounded-xl flex items-center justify-between group cursor-pointer hover:border-blue-400 transition-all">
-            <div>
-              <div className="font-extrabold text-[#2D61A1]">TEST10</div>
-              <div className="text-xs text-slate-500">10% Off up to ₹500</div>
+
+        <div className="p-4 space-y-6">
+          {/* Manual Input */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Enter coupon code"
+              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#2D61A1] outline-none font-bold uppercase placeholder:normal-case"
+            />
+            <button
+              className="px-6 py-3 bg-[#0D2A4A] text-white rounded-xl font-bold hover:bg-[#2D61A1] transition-all">
+              APPLY
+            </button>
+          </div>
+
+          {/* List of Public Coupons */}
+          <div className="max-h-[60vh] overflow-y-auto pr-1">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+              Available Coupons
             </div>
-            <button className="text-sm font-bold text-[#2D61A1] hover:underline">APPLY</button>
+
+            <div className="space-y-3">
+              {loading ? (
+                <p className="text-center text-slate-400">Loading offers...</p>
+              ) : (
+                coupons
+                  .filter(coupon => coupon.couponType === "public") // Only show public coupons
+                  .map((coupon) => (
+                    <div
+                      key={coupon.couponCode}
+                      className="p-4 border border-dashed border-blue-200 bg-blue-50/50 rounded-xl flex items-center justify-between group cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all"
+                    >
+                      <div className="space-y-1">
+                        <div className="font-extrabold text-[#2D61A1] tracking-tight">
+                          {coupon.couponCode}
+                        </div>
+                        <div className="text-xs font-medium text-slate-600">
+                          {coupon.discountType === 'flat'
+                            ? `Save ₹${coupon.flatDiscount.amount} flat off`
+                            : `${coupon.percentageDiscount.percentage}% Off up to ₹${coupon.percentageDiscount.maxDiscountAmount}`
+                          }
+                        </div>
+                        {coupon.minimumOrderValue > 1 && (
+                          <div className="text-[10px] text-slate-400">
+                            Min. order: ₹{coupon.minimumOrderValue}
+                          </div>
+                        )}
+                      </div>
+                      <button onClick={() => {
+                        setAppliedCoupon(coupon); // This updates the price in the sidebar
+                        setShowCouponModal(false); // This closes the modal
+                      }} className="text-sm font-bold text-[#2D61A1] hover:text-[#0D2A4A]">
+                        APPLY
+                      </button>
+                    </div>
+                  ))
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+
 

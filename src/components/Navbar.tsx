@@ -49,8 +49,8 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
           {/* Right Actions */}
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-6">
-              <NavLink to="/" label="Home" />
-              <NavLink to="/store" label="Store" />
+
+              <NavLink to="/" label="Store" />
               {isAuthenticated && <NavLink to="/my-courses" label="My Courses" />}
             </div>
             {isAuthenticated ? (
@@ -99,7 +99,7 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-slate-200 shadow-md">
           <div className="flex flex-col px-4 py-4 space-y-2">
-            <NavLink to="/" label="Home" />
+
             <NavLink to="/store" label="Store" />
             {isAuthenticated && <NavLink to="/my-courses" label="My Courses" />}
             <div className="border-t border-slate-200 mt-2 pt-2 flex flex-col space-y-2">

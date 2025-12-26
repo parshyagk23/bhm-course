@@ -81,7 +81,7 @@ const Store = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`w-full px-4 py-3.5 rounded-xl text-sm font-bold uppercase transition-all
+                className={`w-full px-4 py-3.5 rounded-xl text-sm font-bold uppercase transition-all text-left
                   ${activeCategory === cat
                     ? "border-2 border-[#0D2A4A] text-[#0D2A4A]"
                     : "border-2 border-transparent text-[#0D2A4A] hover:bg-slate-50"

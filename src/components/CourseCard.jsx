@@ -37,7 +37,7 @@ const CourseCard = ({ course }) => {
           {title}
         </h3>
 
-        <div className="flex items-center gap-4 text-xs text-slate-500 mb-5">
+        <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
           <div className="flex items-center gap-1">
             <PlayCircle size={14} className="text-[#2D61A1]" />
             <span>{course?.videoCount} VIDEOS</span>
@@ -48,9 +48,9 @@ const CourseCard = ({ course }) => {
           </div>
         </div>
 
-        <div className="flex items-end justify-between">
-          <div className=" flex flex-col items-start space-y-1">
-            <div className="flex items-start gap-2">
+        <div className="w-full flex flex-col  gap-1">
+          <div className=" flex  space-y-1">
+            <div className="flex  gap-2">
               <span className="text-xl font-bold text-slate-900">
                 ₹{sellingPrice.toLocaleString()}
               </span>
@@ -71,9 +71,9 @@ const CourseCard = ({ course }) => {
 
           <Link
             to={`/course/${title?.replace(" ", "-")}`}
-            className="px-4 py-2 bg-[#0D2A4A] text-white rounded-lg font-medium text-sm hover:bg-[#2D61A1] transition-colors"
+            className="w-[250px] text-center px-4 py-2 bg-[#0D2A4A] text-white rounded-lg font-medium text-sm hover:bg-[#2D61A1] transition-colors"
           >
-            Get the course
+            <p>Get the course</p>
           </Link>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { CheckCircle, Facebook, FacebookIcon, Instagram, InstagramIcon, Linkedin
 
 const CertificateSection = () => {
     const shareText =
-        "I just earned my Professional Certification from Royal Civil! Proud to advance my skills in BIM and Structural Engineering. #CivilEngineering #BIM #RoyalCivil";
+        "I just earned my Professional Certification from Bhavanamsc2c ! Proud to advance my skills in BIM and Structural Engineering. #CivilEngineering #BIM #Bhavanamsc2c";
 
     const bullets = [
         "Industry-recognized certification",
@@ -18,19 +18,20 @@ const CertificateSection = () => {
     };
 
     return (
-        <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-3 md:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-6 uppercase tracking-tight text-center md:text-left">
-                Earn a Professional Certificate
-            </h2>
+        <section className="">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+            <div className="mb-4 text-left">
+                {/* <div className="text-[#2D61A1] text-[10px] font-black uppercase tracking-[0.3em] mb-1">
+                    LEARN FOR THE BEST
+                </div> */}
+                <h3 className="text-2xl sm:text-2xl font-black text-[#0D2A4A] tracking-tight">
+                    Earn a Professional Certificate
+                </h3>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-3 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
                 {/* LEFT */}
                 <div>
-                    <p className="text-slate-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-                        Validate your skills and expertise with our industry-recognized
-                        certification. Perfect for adding to your resume and LinkedIn
-                        profile.
-                    </p>
 
                     <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                         {bullets.map((bullet, i) => (
@@ -62,7 +63,7 @@ const CertificateSection = () => {
                 </div>
 
                 {/* RIGHT IMAGE */}
-                <div className="relative group flex flex-col items-center md:items-start mt-6 md:mt-0">
+                <div className="relative group flex flex-col items-center mt-6 md:mt-0">
                     <div className="relative bg-white p-2 rounded-2xl shadow-xl overflow-hidden">
                         <img
                             src="https://i.postimg.cc/QMLfBkJk/certificate.png"
@@ -72,13 +73,13 @@ const CertificateSection = () => {
                     </div>
 
                     {/* Recognition Text */}
-                    <p className="mt-3 text-center md:text-left text-sm text-slate-600 max-w-xs md:max-w-full">
+                    <p className="mt-3 text-center  text-sm text-slate-600 max-w-xs md:max-w-full">
                         Bhavanam&apos;s C2C certificates are recognized globally for technical excellence.
                     </p>
 
                     {/* Social Share Buttons */}
-                    <div className="mt-3 md:mt-4 space-y-2 flex flex-col items-center md:items-start">
-                        <div className="text-slate-900 font-bold text-sm sm:text-lg text-center md:text-left">
+                    <div className="mt-3  space-y-2 flex flex-col justify-center items-center">
+                        <div className="text-slate-900 font-bold text-sm sm:text-lg text-center">
                             Follow to Share
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-3 mt-1">
