@@ -4,12 +4,12 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Store from "./pages/Store";
-import CourseDetail from "./pages/CourseDetail";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import { Toaster } from "react-hot-toast";
 import DashboardCopy from "./pages/Dashboardcopy";
+import CourseDetail from "./pages/CourseDetail";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(

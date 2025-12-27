@@ -14,6 +14,7 @@ import VideoContent from '../components/VideoContent';
 import ResourceContent from '../components/ResourceContent';
 import { getCoupon } from '../services/coupon';
 import PricingSidebar from '../components/PricingSidebar';
+import { parseCourseDescription } from '../helper';
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -41,12 +42,7 @@ const CourseDetail = () => {
     fetchCourseDetails();
   }, []);
 
-  const parseCourseDescription = (description = "") => {
-    return description
-      .split("\n")
-      .map(item => item.replace(/^\d+\.\s*/, "").trim())
-      .filter(Boolean);
-  };
+
 
   const descriptionList = parseCourseDescription(course?.courseDescription);
 
@@ -98,7 +94,7 @@ const CourseDetail = () => {
   // 6. Formatting for display (ONLY at the end)
   const totalPayable = rawTotal.toFixed(2);
 
-  console.log(totalPayable);
+  // console.log(totalPayable);
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 p-4">
@@ -182,35 +178,53 @@ const CourseDetail = () => {
                 {activeTab === "overview" && (
                   <>
                     <CourseOverview descriptionList={descriptionList} />
-                    <InstructorCard />
+                    {course?.instructors?.length != 0 && <InstructorCard instructors={course?.instructors} />}
                     <CertificateSection />
-                    <Testimonials />
+                    <Testimonials testimonials={course?.testimonials?.data} />
                     {/* Request Callback & Get In Touch Section */}
                     <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm mt-4">
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12"> {/* Request a Callback */}
-                        <div className="space-y-8"> <h3 className="text-2xl font-extrabold text-[#0D2A4A]">Request a Callback</h3>
+                        <div className="space-y-8">
+                          <h3 className="text-2xl font-extrabold text-[#0D2A4A]">Request a Callback</h3>
                           <div className="space-y-4"> {["Connect with our team", "Resolve issues quickly",
                             "Get answers to your queries",
                             "Discuss details about courses",
                             "Receive personalized guidance"].map((item, i) =>
                             (<div key={i} className="flex items-center gap-3">
-                              <div className="text-green-500 shrink-0"> <CheckCircle size={24} /> </div>
-                              <span className="text-lg font-medium text-slate-700">{item}</span> </div>))}
-                          </div> <button className="flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-2 bg-[#D9534F] text-white rounded-xl font-bold hover:bg-[#c94b48] transition-all shadow-lg text-lg">
+                              <div className="text-green-500 shrink-0"> <CheckCircle size={24} />
+                              </div>
+                              <span className="text-lg font-medium text-slate-700">{item}</span>
+                            </div>))}
+                          </div>
+                          <button className="flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-2 bg-[#D9534F] text-white rounded-xl font-bold hover:bg-[#c94b48] transition-all shadow-lg text-lg">
                             <Phone size={22} className="fill-white" /> Book Appointment Now </button>
                         </div> {/* Get In Touch */} <div className="space-y-4"> <div>
                           <h3 className="text-2xl font-extrabold text-[#0D2A4A] mb-2">Get In Touch</h3>
                           <p className="text-slate-500 font-medium text-lg">Feel free to reach out to us, we're here to help you.</p> </div>
-                          <div className="space-y-2"> <div className="flex items-center gap-2">
-                            <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <Phone size={24} /> </div>
-                            <div> <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Call Us</div>
-                              <div className="text-[16px] font-semibold text-left text-slate-900">+91 9110-363-544</div> </div>
-                          </div> <div className="flex items-center gap-4"> <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <Mail size={24} /> </div>
-                              <div> <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Email Us</div>
-                                <div className="text-[16px] font-semibold text-left text-slate-900">info@bhavanamsc2c.com</div> </div> </div>
-                            <div className="flex items-start gap-4"> <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <MapPin size={24} /> </div>
-                              <div> <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Location</div>
-                                <div className="text-[16px] font-semibold text-left text-slate-900 leading-tight"> 16-2-755/8/C, H.S.Meadows, Gaddlannaram, Dilshukhnagar, Hyderabad, Telangana - 500060 </div> </div>
+                          <div className="space-y-2"> <
+                            div className="flex items-center gap-2">
+                            <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <Phone size={24} />
+                            </div>
+                            <div>
+                              <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Call Us</div>
+                              <div className="text-[16px] font-semibold text-left text-slate-900">+91 9110-363-544
+                              </div>
+                            </div>
+                          </div>
+                            <div className="flex items-center gap-4"> <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0"> <Mail size={24} />
+                            </div>
+                              <div>
+                                <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Email Us</div>
+                                <div className="text-[16px] font-semibold text-left text-slate-900">info@bhavanamsc2c.com</div>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-4"> <div className="w-12 h-12 bg-blue-50 text-[#2D61A1] rounded-2xl flex items-center justify-center shrink-0">
+                              <MapPin size={24} />
+                            </div>
+                              <div>
+                                <div className="text-xs font-semibold text-left text-slate-400 uppercase tracking-widest mb-1">Location</div>
+                                <div className="text-[16px] font-semibold text-left text-slate-900 leading-tight"> 16-2-755/8/C, H.S.Meadows, Gaddlannaram, Dilshukhnagar, Hyderabad, Telangana - 500060 </div>
+                              </div>
                             </div>
                           </div>
                         </div>

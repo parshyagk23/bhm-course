@@ -5,6 +5,7 @@ import { AlertCircle, Play, ShoppingCart, Tag } from 'lucide-react';
 import AuthModal from './AuthModal';
 import StatusModal from './StatusModal';
 import LoadingOverlay from './LoadingOverlay';
+import { getExpiryDateFromDuration, getNextDueDate } from '../helper';
 
 const PricingSidebar = (
     { course,
@@ -28,7 +29,20 @@ const PricingSidebar = (
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    console.log(user)
+
+    let { installment } = course;
+    installment = installment?.[0] || null;
+    console.log("installment", installment)
+
+    const totalInstallments = installment?.noOfInstallments || 1;
+
+    const installmentAmount = Math.ceil(totalPayable / totalInstallments);
+
+    const currentPayableAmount = isInstallmentMode
+        ? installmentAmount
+        : totalPayable;
+
+    // console.log(user)
     const handlePburchase = async () => {
         if (!user) {
             setShowAuthModal(true); // Open custom modal instead of alert
@@ -42,13 +56,13 @@ const PricingSidebar = (
             uid: UID, // Get this from your Auth context/state
             phoneNo: PhoneNo,
             username: name,
-            expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Example: 1 year
+            expiryDate: course?.courseDuration?.unit !== "Lifetime" ? getExpiryDateFromDuration(course?.courseDuration) : null,
             isLifetime: course?.courseDuration?.unit === "Lifetime",
             paymentDetails: {
                 sellingPrice: sellingPrice,
                 mrp: mrp,
                 discountAmount: discountAmount,
-                amountPaid: totalPayable,
+                amountPaid: currentPayableAmount,
                 internetHandlingCharge: handlingCharges,
                 gst: gstAmount,
                 isCouponApplied: !!appliedCoupon,
@@ -58,22 +72,28 @@ const PricingSidebar = (
                     isPercentage: appliedCoupon.discountType === 'percentage',
                     percentage: appliedCoupon.percentageDiscount?.percentage || 0
                 } : null,
-                isInstallment: false,
-                installment: false ? {
-                    isInstallment: isInstallmentMode,
-                    totalInstallments: isInstallmentMode ? 2 : 1,
-                    currentInstallmentNumber: 1,
-                    amountPaid: isInstallmentMode ? totalPayable / 2 : totalPayable,
-                    remainingBalance: isInstallmentMode ? totalPayable / 2 : 0,
-                    nextDueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                } : null
+                isInstallment: isInstallmentMode,
+                installment: isInstallmentMode
+                    ? {
+                        isInstallment: true,
+                        totalInstallments,
+                        currentInstallmentNumber: 1,
+                        amountPaid: installmentAmount,
+                        remainingBalance:
+                            totalPayable - installmentAmount,
+                        duration: installment?.duration,
+                        nextDueDate: getNextDueDate(
+                            installment?.duration
+                        )
+                    }
+                    : null
             }
         };
 
         // 2. Razorpay Options
         const options = {
             key: "rzp_test_RQDayzrkVov4Ix",
-            amount: totalPayable * 100, // Razorpay works in paise (multiply by 100)
+            amount: currentPayableAmount * 100, // Razorpay works in paise (multiply by 100)
             currency: countrycode == "+91" ? "INR" : "USD",
             name: "Bhavanam SC2C",
             description: `Purchase ${course?.courseName}`,
@@ -135,7 +155,7 @@ const PricingSidebar = (
                             <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
                                 Pricing Details
                             </span>
-                            <button
+                            {installment && <button
                                 onClick={() => setIsInstallmentMode(!isInstallmentMode)}
                                 className={`text-xs font-bold px-3 py-1 rounded-full border transition-all ${isInstallmentMode
                                     ? "bg-[#2D61A1] text-white border-[#2D61A1]"
@@ -143,7 +163,7 @@ const PricingSidebar = (
                                     }`}
                             >
                                 Installments Available
-                            </button>
+                            </button>}
                         </div>
 
                         <div className="flex items-baseline gap-3">
@@ -213,21 +233,49 @@ const PricingSidebar = (
                         {isInstallmentMode && (
                             <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-100 space-y-3">
                                 <div className="flex items-center gap-2 text-yellow-800 font-bold text-sm">
-                                    <AlertCircle size={16} /> Pay in 2 Installments
+                                    <AlertCircle size={16} /> Pay in {totalInstallments} Installments
                                 </div>
+
                                 <div className="space-y-1">
-                                    <div className="flex justify-between text-xs font-semibold text-slate-600">
-                                        <span>1st Installment (Now)</span>
-                                        <span>₹779.19</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs font-semibold text-slate-400">
-                                        <span>2nd Installment (After 2 wks)</span>
-                                        <span>₹779.19</span>
-                                    </div>
+                                    {[...Array(totalInstallments)].map((_, index) => {
+                                        const isFirst = index === 0;
+
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={`flex justify-between text-xs font-semibold ${isFirst ? "text-slate-600" : "text-slate-400"
+                                                    }`}
+                                            >
+                                                <span>
+                                                    {index + 1}
+                                                    {index === 0
+                                                        ? "st Installment (Now)"
+                                                        : index === 1
+                                                            ? "nd Installment"
+                                                            : index === 2
+                                                                ? "rd Installment"
+                                                                : "th Installment"}{" "}
+                                                    {!isFirst && `(After ${installment?.duration})`}
+                                                </span>
+
+                                                <span>₹{installmentAmount}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <button className="w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-xs hover:bg-yellow-600 transition-all">
-                                    Pay 1st Installment ₹779
+
+                                <button
+                                    onClick={() => {
+                                        if (!isInstallmentMode) {
+                                            setIsInstallmentMode(true);
+                                        }
+                                        handlePburchase();
+                                    }}
+                                    className="w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-xs hover:bg-yellow-600 transition-all"
+                                >
+                                    Pay 1st Installment ₹{installmentAmount}
                                 </button>
+
                             </div>
                         )}
                     </div>
