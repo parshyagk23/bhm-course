@@ -18,7 +18,7 @@ const InstructorCard = ({ instructors = [] }) => {
     const instructor = instructors[currentIndex];
 
     return (
-        <div className="bg-slate-50  rounded-2xl border border-slate-100  ">
+        <div className=" ">
 
             <div className="mb-6 sm:mb-8 text-left">
                 <div className="text-[#2D61A1] text-[10px] font-black uppercase tracking-[0.3em] mb-1">

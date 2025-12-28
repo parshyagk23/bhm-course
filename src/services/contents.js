@@ -49,3 +49,12 @@ export const getCourseQuizzesByFolder = async (courseId, folderId) => {
     );
     return res.data;
 };
+
+
+
+export const getContentbyContentId =async (type, contentid) => {
+    const res = await api.get(
+        `/user/content/get/content/${contentid}?type=${type}`
+    );
+    return res.data;
+}
