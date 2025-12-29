@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Award, ChevronRight, AlertTriangle, CheckCircle, Play, MessageCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getEnrolledCourse } from '../services/enrollment';
 
 
@@ -10,13 +10,15 @@ const DashboardCopy = () => {
    const [enrollments, setEnrollments] = useState([]);
    const [loading, setLoading] = useState(true);
 
-   const user = JSON.parse(localStorage.getItem("user"))
-   const { UID } = user
    // Modal States
    const [showReviewModal, setShowReviewModal] = useState(false);
    const [showCertificateModal, setShowCertificateModal] = useState(false);
    const [rating, setRating] = useState(0);
    const [reviewText, setReviewText] = useState('');
+
+   const user = JSON.parse(localStorage.getItem("user"))
+   const { UID } = user
+   const navigate = useNavigate()
 
    // 2. Fetch Data (Replace with your actual API call)
    const fetchEnrolledCourses = async () => {
@@ -63,9 +65,9 @@ const DashboardCopy = () => {
                   <div className="aspect-video relative bg-slate-100 flex items-center justify-center">
                      {/* Placeholder for actual course image if not in backend */}
                      <div className="text-[#0D2A4A] font-black text-2xl uppercase opacity-20">{course.courseName}</div>
-                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-[#0D2A4A] shadow-sm">
+                     {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-[#0D2A4A] shadow-sm">
                         ID: {course.courseID}
-                     </div>
+                     </div> */}
                   </div>
 
                   <div className="p-6 space-y-4">
@@ -93,7 +95,7 @@ const DashboardCopy = () => {
                      )}
 
                      <div className="pt-2 flex flex-col gap-2">
-                        <button className="w-full py-3 bg-[#0D2A4A] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all">
+                        <button onClick={() => navigate(`/learning-hub/${course.courseName?.replaceAll(" ", "-")}`)} className="w-full py-3 bg-[#0D2A4A] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all">
                            Continue Learning <ChevronRight size={18} />
                         </button>
 

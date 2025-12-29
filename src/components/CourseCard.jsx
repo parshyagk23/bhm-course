@@ -70,7 +70,7 @@ const CourseCard = ({ course }) => {
           </div>
 
           <Link
-            to={`/course/${title?.replace(" ", "-")}`}
+            to={`/course/${title?.replaceAll(" ", "-")}`}
             className="w-[250px] text-center px-4 py-2 bg-[#0D2A4A] text-white rounded-lg font-medium text-sm hover:bg-[#2D61A1] transition-colors"
           >
             <p>Get the course</p>

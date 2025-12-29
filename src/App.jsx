@@ -2,14 +2,18 @@ import { useState, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Landing from "./pages/Landing";
 import Store from "./pages/Store";
-import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import { Toaster } from "react-hot-toast";
 import DashboardCopy from "./pages/Dashboardcopy";
 import CourseDetail from "./pages/CourseDetail";
+import ProtectedRoute from "./ProtectedRoute";
+import LearningHub from "./pages/LearningHub";
+import SecurityProvider from "./Provider/SecureProvider";
+
+// Assuming LearningHub is imported or defined
+// import LearningHub from "./pages/LearningHub"; 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -25,10 +29,6 @@ function App() {
     return () => window.removeEventListener("storage", syncAuth);
   }, []);
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("uid");
@@ -37,47 +37,61 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Toaster position="top-right" />
-      <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
+    <SecurityProvider>
+      <div className="min-h-screen flex flex-col">
+        <Toaster position="top-right" />
+        <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
 
-      <main className="flex-1">
-        <Routes>
-          {/* <Route path="/" element={<Landing />} /> */}
-          <Route path="/" element={<Store />} />
-          <Route path="/course/:id" element={<CourseDetail />} />
+        <main className="flex-1">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Store />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
 
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/my-courses" />
-              ) : (
-                <Auth onLogin={handleLogin} />
-              )
-            }
-          />
+            {/* Login Route: Redirects to dashboard if already logged in */}
+            <Route
+              path="/login"
+              element={
+                isAuthenticated ? <Navigate to="/my-courses" replace /> : <Auth />
+              }
+            />
 
-          <Route
-            path="/my-courses"
-            element={
-              isAuthenticated ? <DashboardCopy /> : <Navigate to="/login" />
-            }
-          />
+            {/* Protected Routes: Wrapped in ProtectedRoute component */}
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute>
+                  <DashboardCopy />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/profile"
-            element={
-              isAuthenticated ? <Profile /> : <Navigate to="/login" />
-            }
-          />
+            <Route
+              path="/learning-hub/:coursename"
+              element={
+                <ProtectedRoute>
+                  <LearningHub />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </main>
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-      <Footer />
-    </div>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
+    </SecurityProvider>
   );
 }
 

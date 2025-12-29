@@ -52,58 +52,59 @@ const VideoContentModal = ({ type, contentid, setShowVideoModal, userName = "Stu
     const handleContextMenu = (e) => e.preventDefault();
 
     return (
+        <SecurityProvider>
+            <div className="fixed inset-0 z-[60] flex items-center justify-center">
+                <div
+                    className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
+                    onClick={() => setShowVideoModal(false)}
+                ></div>
 
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
-            <div
-                className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
-                onClick={() => setShowVideoModal(false)}
-            ></div>
+                <div className="relative bg-white w-full my-4 max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 className="font-bold text-lg text-slate-800">
+                            {loading ? "Preparing Video..." : videoData?.title}
+                        </h3>
+                        <button
+                            onClick={() => setShowVideoModal(false)}
+                            className="text-slate-400 hover:text-slate-600 text-3xl leading-none"
+                        >
+                            &times;
+                        </button>
+                    </div>
 
-            <div className="relative bg-white w-full my-4 max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                    <h3 className="font-bold text-lg text-slate-800">
-                        {loading ? "Preparing Video..." : videoData?.title}
-                    </h3>
-                    <button
-                        onClick={() => setShowVideoModal(false)}
-                        className="text-slate-400 hover:text-slate-600 text-3xl leading-none"
-                    >
-                        &times;
-                    </button>
-                </div>
-
-                <div className="relative bg-black aspect-video flex items-center justify-center group" onContextMenu={handleContextMenu}>
-                    {loading ? (
-                        <div className="flex flex-col items-center gap-3">
-                            <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
-                            <p className="text-white/60 text-sm">Loading content...</p>
-                        </div>
-                    ) : videoData?.videoUrl ? (
-                        <>
+                    <div className="relative bg-black aspect-video flex items-center justify-center group" onContextMenu={handleContextMenu}>
+                        {loading ? (
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                <p className="text-white/60 text-sm">Loading content...</p>
+                            </div>
+                        ) : videoData?.videoUrl ? (
+                            <>
 
 
-                            <video
-                                ref={videoRef}
-                                controls
-                                autoPlay
-                                className="w-full h-full z-0"
-                                controlsList="nodownload"
-                                disablePictureInPicture
-                            >
-                                <source src={videoData.videoUrl} type="video/mp4" />
-                            </video>
-                        </>
-                    ) : (
-                        <div className="text-white">Video not found.</div>
-                    )}
-                </div>
+                                <video
+                                    ref={videoRef}
+                                    controls
+                                    autoPlay
+                                    className="w-full h-full z-0"
+                                    controlsList="nodownload"
+                                    disablePictureInPicture
+                                >
+                                    <source src={videoData.videoUrl} type="video/mp4" />
+                                </video>
+                            </>
+                        ) : (
+                            <div className="text-white">Video not found.</div>
+                        )}
+                    </div>
 
-                {/* Visual indicator that content is protected */}
-                <div className="p-2 bg-slate-50 text-center text-[10px] text-slate-400 font-medium uppercase tracking-widest border-t border-slate-100">
-                    Encrypted Session • ID: {contentid} • Licensed to {userName}
+                    {/* Visual indicator that content is protected */}
+                    <div className="p-2 bg-slate-50 text-center text-[10px] text-slate-400 font-medium uppercase tracking-widest border-t border-slate-100">
+                        Encrypted Session • ID: {contentid} • Licensed to {userName}
+                    </div>
                 </div>
             </div>
-        </div>
+        </SecurityProvider>
     )
 }
 

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { User, Shield, MapPin, GraduationCap, Users, Camera, Save } from 'lucide-react';
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState<'general' | 'personal' | 'address' | 'education' | 'invite'>('general');
+  const [activeTab, setActiveTab] = useState('general');
   const user = JSON.parse(localStorage.getItem("user"))
   console.log(user)
   const tabs = [
@@ -23,14 +23,14 @@ const Profile = () => {
           <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center">
             <div className="relative inline-block mb-6">
               <div className="w-32 h-32 rounded-full border-4 border-blue-50 overflow-hidden bg-slate-100">
-                <img src="https://placehold.co/200x200/2D61A1/white?text=SR" alt="User" className="w-full h-full object-cover" />
+                <img src={`https://placehold.co/200x200/2D61A1/white?text=${user?.name.charAt(0)}`} alt="User" className="w-full h-full object-cover" />
               </div>
               <button className="absolute bottom-1 right-1 w-10 h-10 bg-[#0D2A4A] text-white rounded-full flex items-center justify-center border-4 border-white shadow-lg hover:bg-[#2D61A1] transition-all">
                 <Camera size={18} />
               </button>
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Srinivasa Reddy</h3>
-            <p className="text-sm font-bold text-[#2D61A1] mb-2 uppercase tracking-widest">BHV0012</p>
+            <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
+            {/* <p className="text-sm font-bold text-[#2D61A1] mb-2 uppercase tracking-widest">BHV0012</p> */}
             <div className="flex items-center justify-center gap-4 pt-4 border-t border-slate-100">
               <button className="text-xs font-bold text-[#2D61A1] hover:underline">Change Photo</button>
               <span className="text-slate-300">|</span>
@@ -42,7 +42,7 @@ const Profile = () => {
             {tabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-4 px-6 py-4 text-sm font-bold transition-all border-l-4 ${activeTab === tab.id
                   ? 'bg-blue-50 text-[#2D61A1] border-[#2D61A1]'
                   : 'text-slate-500 hover:bg-slate-50 border-transparent'
@@ -74,11 +74,11 @@ const Profile = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Email Id</label>
-                    <input type="email" defaultValue={user?.email} className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none" />
+                    <input type="email" readOnly defaultValue={user?.email} className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none" />
                   </div>
                   <div className="md:col-span-2 space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                    <input type="text" defaultValue={user?.name} className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none" />
+                    <input type="text" readOnly defaultValue={user?.name} className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none" />
                   </div>
                 </div>
               </div>
