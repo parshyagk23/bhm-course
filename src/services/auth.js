@@ -19,3 +19,11 @@ export const registerUser = async (payload) => {
         throw error.response?.data || error.message;
     }
 };
+export const updateUserDetails = async (payload) => {
+    try {
+        const response = await api.patch("/user/auth/update-details", payload);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};

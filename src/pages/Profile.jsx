@@ -1,18 +1,112 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Shield, MapPin, GraduationCap, Users, Camera, Save } from 'lucide-react';
-
+import { updateUserDetails } from '../services/auth';
+import toast from 'react-hot-toast';
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('general');
   const user = JSON.parse(localStorage.getItem("user"))
-  console.log(user)
+
   const tabs = [
     { id: 'general', label: 'General Details', icon: User },
     { id: 'personal', label: 'Personal Details', icon: Shield },
     { id: 'address', label: 'Address', icon: MapPin },
     { id: 'education', label: 'Educational Details', icon: GraduationCap },
-    { id: 'invite', label: 'Invite Friends', icon: Users },
+
   ];
+
+  const [profileData, setProfileData] = useState({
+    personal: {
+      gender: "male",
+      nationality: "Indian",
+      dateofbirth: ""
+    },
+    address: {
+      city: "",
+      state: "",
+      pincode: "",
+      permantentAddress: ""
+    },
+    professional: {
+      yearOfExperience: "",
+      collegeorcompany: ""
+    }
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleChange = (section, field, value) => {
+    setProfileData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value
+      }
+    }));
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Construct the payload to match your Python UpdateUserRequest
+      const payload = {
+        personal: {
+          gender: profileData.personal.gender || "",
+          nationality: profileData.personal.nationality || "",
+          dateofbirth: profileData.personal.dateofbirth || ""
+        },
+        address: {
+          city: profileData.address.city || "",
+          state: profileData.address.state || "",
+          pincode: profileData.address.pincode || "",
+          permantentAddress: profileData.address.permantentAddress || ""
+        },
+        professional: {
+          yearOfExperience: profileData.professional.yearOfExperience || "",
+          collegeorcompany: profileData.professional.collegeorcompany || ""
+        }
+      };
+
+      const response = await updateUserDetails(payload);
+
+      if (response.status) {
+        // 1. Update the user object in localStorage
+        const updatedUser = { ...user, ...response.user };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+
+        // 2. Trigger a storage event so App.js knows to re-render (if needed)
+        window.dispatchEvent(new Event("storage"));
+
+        toast.success("Profile updated successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.detail || "Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        uid: user.UID || user.uid,
+        personal: {
+          gender: user.personal_details?.gender || "male",
+          nationality: user.personal_details?.nationality || "Indian",
+          dateofbirth: user.personal_details?.dateofbirth || ""
+        },
+        address: {
+          city: user.address_details?.city || "",
+          state: user.address_details?.state || "",
+          pincode: user.address_details?.pincode || "",
+          permantentAddress: user.address_details?.permantentAddress || ""
+        },
+        professional: {
+          yearOfExperience: user.professional_details?.yearOfExperience || "",
+          collegeorcompany: user.professional_details?.collegeorcompany || ""
+        }
+      });
+    }
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -74,11 +168,15 @@ const Profile = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Email Id</label>
-                    <input type="email" readOnly defaultValue={user?.email} className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none" />
+                    <div className="px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900">
+                      {user?.email}
+                    </div>
                   </div>
                   <div className="md:col-span-2 space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                    <input type="text" readOnly defaultValue={user?.name} className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none" />
+                    <div className="px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900">
+                      {user?.name}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -91,27 +189,52 @@ const Profile = () => {
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Gender</label>
                     <div className="flex gap-4">
-                      <label className="flex-1 flex items-center justify-center gap-2 p-4 border-2 border-slate-100 rounded-xl cursor-pointer hover:border-[#2D61A1] transition-all has-[:checked]:border-[#2D61A1] has-[:checked]:bg-blue-50">
-                        <input type="radio" name="gender" value="male" defaultChecked className="hidden" />
+                      <label className={`flex-1 flex items-center justify-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all ${profileData.personal.gender === 'male' ? 'border-[#2D61A1] bg-blue-50' : 'border-slate-100'}`}>
+                        <input
+                          onChange={() => handleChange("personal", "gender", "male")}
+                          type="radio"
+                          name="gender"
+                          checked={profileData.personal.gender === "male"}
+                          className="hidden"
+                        />
                         <span className="font-bold">Male</span>
                       </label>
-                      <label className="flex-1 flex items-center justify-center gap-2 p-4 border-2 border-slate-100 rounded-xl cursor-pointer hover:border-[#2D61A1] transition-all has-[:checked]:border-[#2D61A1] has-[:checked]:bg-blue-50">
-                        <input type="radio" name="gender" value="female" className="hidden" />
+                      <label className={`flex-1 flex items-center justify-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all ${profileData.personal.gender === 'female' ? 'border-[#2D61A1] bg-blue-50' : 'border-slate-100'}`}>
+                        <input
+                          onChange={() => handleChange("personal", "gender", "female")}
+                          type="radio"
+                          name="gender"
+                          checked={profileData.personal.gender === "female"}
+                          className="hidden"
+                        />
                         <span className="font-bold">Female</span>
                       </label>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nationality</label>
-                    <input type="text" defaultValue="Indian" className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900" />
+                    <input
+                      onChange={(e) => handleChange("personal", "nationality", e.target.value)}
+                      type="text"
+                      value={profileData.personal.nationality}
+                      className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900"
+                    />
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Date of Birth</label>
-                    <div className="grid grid-cols-3 gap-4">
-                      <input type="number" placeholder="Day" className="px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900" />
-                      <input type="text" placeholder="Month" className="px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900" />
-                      <input type="number" placeholder="Year" className="px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900" />
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Date of Birth
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={profileData.personal.dateofbirth}
+                        onChange={(e) => handleChange('personal', 'dateofbirth', e.target.value)}
+                        className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-[#2D61A1] outline-none"
+                      />
                     </div>
+                    <p className="text-[10px] text-slate-400 italic mt-1">
+                      Format: Day / Month / Year
+                    </p>
                   </div>
                 </div>
               </div>
@@ -123,19 +246,38 @@ const Profile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">City / District</label>
-                    <input type="text" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
+                    <input
+                      value={profileData.address.city}
+                      onChange={(e) => handleChange("address", "city", e.target.value)}
+                      type="text"
+                      className="w-full px-5 py-4 border border-slate-200 rounded-xl"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">State</label>
-                    <input type="text" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
+                    <input
+                      value={profileData.address.state}
+                      onChange={(e) => handleChange("address", "state", e.target.value)}
+                      type="text"
+                      className="w-full px-5 py-4 border border-slate-200 rounded-xl"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">PIN Code</label>
-                    <input type="number" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
+                    <input
+                      value={profileData.address.pincode}
+                      onChange={(e) => handleChange("address", "pincode", e.target.value)}
+                      type="number"
+                      className="w-full px-5 py-4 border border-slate-200 rounded-xl"
+                    />
                   </div>
                   <div className="md:col-span-2 space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Permanent Address</label>
-                    <textarea className="w-full px-5 py-4 border border-slate-200 rounded-xl min-h-[100px]"></textarea>
+                    <textarea
+                      value={profileData.address.permantentAddress}
+                      onChange={(e) => handleChange("address", "permantentAddress", e.target.value)}
+                      className="w-full px-5 py-4 border border-slate-200 rounded-xl min-h-[100px]"
+                    />
                   </div>
                 </div>
               </div>
@@ -147,21 +289,31 @@ const Profile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Year of Study / Experience</label>
-                    <input type="text" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
+                    <input value={profileData.professional.yearOfExperience} onChange={(e) => handleChange("professional", "yearOfExperience", e.target.value)} type="text" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">College / Company</label>
-                    <input type="text" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
+                    <input value={profileData.professional.collegeorcompany} onChange={(e) => handleChange("professional", "collegeorcompany", e.target.value)} type="text" className="w-full px-5 py-4 border border-slate-200 rounded-xl" />
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="pt-8 border-t border-slate-100 flex justify-end">
-              <button className="px-10 py-4 bg-[#0D2A4A] text-white rounded-xl font-extrabold flex items-center gap-2 hover:bg-[#2D61A1] transition-all shadow-lg hover:shadow-blue-500/20">
-                <Save size={20} /> Save Changes
-              </button>
-            </div>
+            {activeTab != 'general' &&
+              <div className="pt-8 border-t border-slate-100 flex justify-end">
+                <button onClick={handleSave} className="px-10 py-4 bg-[#0D2A4A] text-white rounded-xl font-extrabold flex items-center gap-2 hover:bg-[#2D61A1] transition-all shadow-lg hover:shadow-blue-500/20">
+                  {isSaving ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={20} /> Save Changes
+                    </>
+                  )}
+                </button>
+              </div>}
           </div>
         </main>
       </div>
