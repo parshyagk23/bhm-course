@@ -37,61 +37,61 @@ function App() {
   };
 
   return (
-    // <SecurityProvider>
-    <div className="min-h-screen flex flex-col">
-      <Toaster position="top-right" />
-      <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
+    <SecurityProvider>
+      <div className="min-h-screen flex flex-col">
+        <Toaster position="top-right" />
+        <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
 
-      <main className="flex-1">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Store />} />
-          <Route path="/course/:id" element={<CourseDetail />} />
+        <main className="flex-1">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Store />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
 
-          {/* Login Route: Redirects to dashboard if already logged in */}
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? <Navigate to="/my-courses" replace /> : <Auth onLogin={() => setIsAuthenticated(true)} />
-            }
-          />
+            {/* Login Route: Redirects to dashboard if already logged in */}
+            <Route
+              path="/login"
+              element={
+                isAuthenticated ? <Navigate to="/my-courses" replace /> : <Auth onLogin={() => setIsAuthenticated(true)} />
+              }
+            />
 
-          {/* Protected Routes: Wrapped in ProtectedRoute component */}
-          <Route
-            path="/my-courses"
-            element={
-              <ProtectedRoute>
-                <DashboardCopy />
-              </ProtectedRoute>
-            }
-          />
+            {/* Protected Routes: Wrapped in ProtectedRoute component */}
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute>
+                  <DashboardCopy />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/learning-hub/:coursename"
-            element={
-              <ProtectedRoute>
-                <LearningHub />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/learning-hub/:coursename"
+              element={
+                <ProtectedRoute>
+                  <LearningHub />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </main>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
 
-      <Footer />
-    </div>
-    // </SecurityProvider>
+        <Footer />
+      </div>
+    </SecurityProvider>
   );
 }
 
