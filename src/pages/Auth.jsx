@@ -42,11 +42,9 @@ const Auth = ({ onLogin }) => {
         } else if (activeTab === 'signup' && !emailRegex.test(formData.email) && !phoneRegex.test(formData.email)) {
             newErrors.email = 'Enter a valid email or 10-digit phone number';
         }
+        if (!formData.phone) newErrors.phone = 'Phone number is required';
+        else if (!phoneRegex.test(formData.phone)) newErrors.phone = 'Enter a valid 10-digit number';
 
-        if (activeTab === 'signup') {
-            if (!formData.phone) newErrors.phone = 'Phone number is required';
-            else if (!phoneRegex.test(formData.phone)) newErrors.phone = 'Enter a valid 10-digit number';
-        }
 
         if (!formData.password) {
             newErrors.password = 'Password is required';
@@ -98,7 +96,7 @@ const Auth = ({ onLogin }) => {
         } catch (err) {
             console.log(err);
             const errorMsg =
-                err?.detail
+                err?.detail.split(':')[1].trim();
             "Something went wrong";
 
             toast.error(errorMsg);

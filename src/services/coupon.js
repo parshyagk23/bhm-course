@@ -7,3 +7,9 @@ export const getCoupon = async (courseId) => {
     );
     return res.data;
 };
+export const getCouponById = async (couponcode, courseId) => {
+    const res = await api.get(
+        `/user/coupons/get/${couponcode}/${courseId}`
+    );
+    return res.data;
+};

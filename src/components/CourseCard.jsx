@@ -26,7 +26,7 @@ const CourseCard = ({ course }) => {
         />
 
         {isFeatured && (
-          <div className="absolute top-3 left-3 px-2 py-1 bg-[#F9A825] text-white text-[10px] font-bold rounded uppercase tracking-wider">
+          <div className="absolute top-2 right-3 px-2 py-1 bg-[#F9A825] text-white text-[10px] font-bold rounded uppercase tracking-wider">
             Best Seller
           </div>
         )}

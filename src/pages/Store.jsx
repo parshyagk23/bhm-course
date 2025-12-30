@@ -91,12 +91,13 @@ const Store = () => {
               </button>
             ))}
           </div>
-          <div className="p-6 bg-[#0D2A4A] rounded-2xl text-white space-y-4">
+          <div className=" flex flex-col gap-2 p-6 bg-[#0D2A4A] rounded-2xl text-white ">
             <h4 className="font-bold">Need Help?</h4>
             <p className="text-xs text-slate-300 leading-relaxed">Not sure which course is right for you? Talk to our career counselors.</p>
-            <button className="w-full py-2 bg-[#F9A825] text-[#0D2A4A] rounded-lg text-sm font-bold hover:bg-yellow-400 transition-all">
+            <a href="https://wa.me/+919110363544?text= Hi I need a help" target="_blank"
+              className="text-center py-2 bg-[#F9A825] text-[#0D2A4A] rounded-lg text-sm font-bold hover:bg-yellow-400 transition-all">
               Call Now
-            </button>
+            </a>
           </div>
         </aside>
 

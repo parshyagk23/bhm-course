@@ -15,14 +15,22 @@ const VideoContent = ({ courseId }) => {
     const [openFolders, setOpenFolders] = useState({});
     const [contentByFolder, setContentByFolder] = useState({});
     const [loadingFolder, setLoadingFolder] = useState(null);
-
+    const [loading, setLoading] = useState(false)
     const [showVodeosModal, setShowVideosModal] = useState(false);
     const [videoId, setVideoId] = useState(null);
     // 1️⃣ Load root folders
     useEffect(() => {
         const loadFolders = async () => {
-            const res = await getCourseVideos(courseId);
-            setFolders(res.data || []);
+            try {
+                setLoading(true)
+                const res = await getCourseVideos(courseId);
+                setFolders(res.data || []);
+
+            } catch (error) {
+                setLoading(false)
+            } finally {
+                setLoading(false)
+            }
         };
         loadFolders();
     }, [courseId]);
@@ -112,7 +120,7 @@ const VideoContent = ({ courseId }) => {
                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-400 group-hover:bg-blue-50 group-hover:text-[#2D61A1]">
                             {String(j + 1).padStart(2, "0")}
                         </div>
-                        {item.title || item.name}
+                        {"Lesson " + j + 1 + ": "} {item.title || item.name}
                     </div>
 
                     <div className="flex items-center gap-3 text-slate-400">
@@ -133,6 +141,13 @@ const VideoContent = ({ courseId }) => {
     };
 
 
+    if (loading) {
+        return (
+            <div className="max-w-7xl mx-auto px-4 py-10">
+                <p className="text-center text-slate-500">Loading content...</p>
+            </div>
+        );
+    }
     return (
         <>
             <div className="space-y-5">

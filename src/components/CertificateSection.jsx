@@ -53,12 +53,12 @@ const CertificateSection = () => {
                             LinkedIn Ready
                         </h4>
                         <p className="text-sm text-slate-600 italic mb-3 sm:mb-4">"{shareText}"</p>
-                        <button
+                        <a
                             onClick={copyToClipboard}
                             className="bg-blue-50 text-blue-700 text-sm font-bold px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-100 transition cursor-pointer"
                         >
                             Copy LinkedIn Text
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -77,27 +77,43 @@ const CertificateSection = () => {
                         Bhavanam&apos;s C2C certificates are recognized globally for technical excellence.
                     </p>
 
-                    {/* Social Share Buttons */}
+                    {/* Social Share as */}
                     <div className="mt-3  space-y-2 flex flex-col justify-center items-center">
                         <div className="text-slate-900 font-bold text-sm sm:text-lg text-center">
                             Follow to Share
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-3 mt-1">
-                            <button className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-[#FFDC80] via-[#E1306C] to-[#405DE6] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
+                            <a
+                                href="https://www.instagram.com/bhavanamsc2c_/"
+                                target='_blank'
+                                className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-[#FFDC80] via-[#E1306C] to-[#405DE6] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
                                 <InstagramIcon size={16} />
-                            </button>
-                            <button className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
+                            </a>
+                            <a className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
                                 <SmartphoneIcon size={16} />
-                            </button>
-                            <button className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#FF0000] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
+                            </a>
+                            <a href="https://x.com/bhavanamsc2c"
+                                target="_blank"
+                                className="bg-slate-800 cursor-pointer w-8 h-8 sm:w-9 sm:h-9  text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all " >
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="22" height="22" fill="#FFFFFF" viewBox="0 0 50 50"><path d="M 6.9199219 6 L 21.136719 26.726562 L 6.2285156 44 L 9.40625 44 L 22.544922 28.777344 L 32.986328 44 L 43 44 L 28.123047 22.3125 L 42.203125 6 L 39.027344 6 L 26.716797 20.261719 L 16.933594 6 L 6.9199219 6 z"></path></svg>
+                            </a>
+                            <a href="https://www.youtube.com/channel/UCzOGTExfo84ZCUXH1htqVtg"
+                                target='_blank'
+                                className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#FF0000] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
                                 <YoutubeIcon size={16} />
-                            </button>
-                            <button className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#1877F2] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
+                            </a>
+                            <a
+                                href="https://www.facebook.com/BhavanamsC2C/"
+                                target='_blank'
+                                className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#1877F2] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
                                 <FacebookIcon size={16} fill="currentColor" />
-                            </button>
-                            <button className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#0077B5] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
+                            </a>
+                            <a
+                                href="https://www.linkedin.com/company/bhavanamsc2c/"
+                                target='_blank'
+                                className="cursor-pointer w-8 h-8 sm:w-9 sm:h-9 bg-[#0077B5] text-white rounded-full flex items-center justify-center shadow-lg hover:-translate-y-1 transition-all">
                                 <LinkedinIcon size={16} fill="currentColor" />
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

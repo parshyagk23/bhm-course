@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { User, LogIn, LogOut, Menu, X } from "lucide-react";
+import bhavanamsLogo from '/Images/logo/logo.png'
 
 const Navbar = ({ isAuthenticated, onLogout }) => {
   const location = useLocation();
@@ -35,12 +36,11 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
 
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <div className="w-10 h-10 bg-[#0D2A4A] rounded-lg flex items-center justify-center text-white font-bold text-xl mr-2 shadow-lg shadow-blue-900/10">
-              B
-            </div>
-            <span className="text-xl font-black text-[#0D2A4A] tracking-tighter hidden sm:block">
-              BHAVANAM
-            </span>
+            <img
+              src={bhavanamsLogo}
+              alt="Bhavanam's C2C Logo"
+              className="h-[50px] w-[145px]"
+            />
           </Link>
 
           {/* Desktop Nav */}

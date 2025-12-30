@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { User, Shield, MapPin, GraduationCap, Users, Camera, Save } from 'lucide-react';
-import { updateUserDetails } from '../services/auth';
+import { updateUserDetails, currentUserDetails } from '../services/auth';
 import toast from 'react-hot-toast';
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -85,27 +85,38 @@ const Profile = () => {
       setIsSaving(false);
     }
   };
-  useEffect(() => {
-    if (user) {
+
+  const fetchCurrentUser = async () => {
+    const user = await currentUserDetails()
+
+    if (user?.status) {
+      const updatedUser = { ...user, ...user.user };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event("storage"));
+
+      toast.success("Profile updated successfully!");
       setProfileData({
-        uid: user.UID || user.uid,
         personal: {
-          gender: user.personal_details?.gender || "male",
-          nationality: user.personal_details?.nationality || "Indian",
-          dateofbirth: user.personal_details?.dateofbirth || ""
+          gender: updatedUser?.personal_details?.gender || "male",
+          nationality: updatedUser?.personal_details?.nationality || "Indian",
+          dateofbirth: updatedUser?.personal_details?.dateofbirth || ""
         },
         address: {
-          city: user.address_details?.city || "",
-          state: user.address_details?.state || "",
-          pincode: user.address_details?.pincode || "",
-          permantentAddress: user.address_details?.permantentAddress || ""
+          city: updatedUser?.address_details?.city || "",
+          state: updatedUser?.address_details?.state || "",
+          pincode: updatedUser?.address_details?.pincode || "",
+          permantentAddress: updatedUser?.address_details?.permantentAddress || ""
         },
         professional: {
-          yearOfExperience: user.professional_details?.yearOfExperience || "",
-          collegeorcompany: user.professional_details?.collegeorcompany || ""
+          yearOfExperience: updatedUser?.professional_details?.yearOfExperience || "",
+          collegeorcompany: updatedUser?.professional_details?.collegeorcompany || ""
         }
       });
     }
+  }
+
+  useEffect(() => {
+    fetchCurrentUser()
   }, []);
 
   return (

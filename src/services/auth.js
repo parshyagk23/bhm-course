@@ -27,3 +27,12 @@ export const updateUserDetails = async (payload) => {
         throw error.response?.data || error.message;
     }
 };
+
+export const currentUserDetails = async () => {
+    try {
+        const response = await api.get("/user/auth/get/current-user-details");
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};

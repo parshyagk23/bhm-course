@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Award, ChevronRight, AlertTriangle, CheckCircle, Play, MessageCircle } from 'lucide-react';
+import { Award, ChevronRight, AlertTriangle, CheckCircle, Play, MessageCircle, BookOpen } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getEnrolledCourse } from '../services/enrollment';
 import { updateUserDetails } from '../services/auth';
@@ -17,19 +17,24 @@ const DashboardCopy = () => {
    const [rating, setRating] = useState(0);
    const [reviewText, setReviewText] = useState('');
 
+
    const user = JSON.parse(localStorage.getItem("user"))
    const { UID } = user
    const navigate = useNavigate()
 
    // 2. Fetch Data (Replace with your actual API call)
    const fetchEnrolledCourses = async () => {
-      const responce = await getEnrolledCourse(UID)
-      console.log(responce)
-      if (responce.status) {
-         setEnrollments(responce.data);
+      setLoading(true);
+      try {
+         const response = await getEnrolledCourse(UID);
+         if (response.status) {
+            setEnrollments(response.data);
+         }
+      } catch (error) {
+         console.error("Fetch error:", error);
+      } finally {
+         setLoading(false);
       }
-
-      setLoading(false);
    }
    useEffect(() => {
       // Simulating the API response you provided
@@ -37,6 +42,13 @@ const DashboardCopy = () => {
 
 
    }, []);
+   if (loading) {
+      return (
+         <div className="max-w-7xl mx-auto px-4 py-10">
+            <p className="text-center text-slate-500">Loading courses...</p>
+         </div>
+      );
+   }
 
    return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -60,59 +72,85 @@ const DashboardCopy = () => {
          </div>
 
          {/* 3. Dynamic Course Grid */}
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {enrollments.map((course) => (
-               <div key={course.EnrolledId} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
-                  <div className="aspect-video relative bg-slate-100 flex items-center justify-center">
-                     {/* Placeholder for actual course image if not in backend */}
-                     <div className="text-[#0D2A4A] font-black text-2xl uppercase opacity-20">{course.courseName}</div>
-                     {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-[#0D2A4A] shadow-sm">
-                        ID: {course.courseID}
-                     </div> */}
-                  </div>
-
-                  <div className="p-6 space-y-4">
-                     <div>
-                        <h3 className="font-bold text-slate-900 text-lg">{course.courseName}</h3>
-                        <p className="text-xs text-slate-400 font-medium">Expires on: {new Date(course.expiryDate).toLocaleDateString()}</p>
+         <div className="flex flex-wrap gap-8">
+            {enrollments.length === 0 ? (
+               <div className='w-full flex justify-center' >
+                  <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border border-dashed border-slate-200">
+                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-6">
+                        <BookOpen size={40} />
                      </div>
-
-                     {/* 4. Installment / Payment Status Logic */}
-                     {course.remainingBalance > 0 ? (
-                        <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl flex items-start gap-3">
-                           <AlertTriangle size={18} className="text-orange-600 mt-1 shrink-0" />
-                           <div>
-                              <p className="text-xs font-bold text-orange-800">Pending Installment</p>
-                              <p className="text-[10px] text-orange-700">Due: {course.nextDueDate || 'TBD'}</p>
-                           </div>
-                           <button className="ml-auto text-[10px] bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold">
-                              Pay ₹{course.remainingBalance}
-                           </button>
-                        </div>
-                     ) : (
-                        <div className="flex items-center gap-2 text-green-600 text-[10px] font-bold bg-green-50 w-fit px-3 py-1 rounded-full border border-green-100">
-                           <CheckCircle size={12} /> Full Access Granted
-                        </div>
-                     )}
-
-                     <div className="pt-2 flex flex-col gap-2">
-                        <button onClick={() => navigate(`/learning-hub/${course.courseName?.replaceAll(" ", "-")}`)} className="w-full py-3 bg-[#0D2A4A] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all">
-                           Continue Learning <ChevronRight size={18} />
-                        </button>
-
-                        {/* 5. Conditional Certificate Button */}
-                        {activeTab === 'completed' && (
-                           <button
-                              onClick={() => setShowCertificateModal(true)}
-                              className="w-full py-3 border-2 border-[#0D2A4A] text-[#0D2A4A] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
-                           >
-                              <Award size={18} /> Get Certificate
-                           </button>
-                        )}
-                     </div>
+                     <h2 className="text-xl font-bold text-[#0D2A4A]">No Courses Found</h2>
+                     <p className="text-slate-500 mb-8 text-center max-w-xs">
+                        You haven't enrolled in any courses yet. Start your learning journey today!
+                     </p>
+                     <button
+                        onClick={() => navigate('/stores')}
+                        className="px-8 py-3 bg-[#0D2A4A] text-white rounded-xl font-bold shadow-lg hover:bg-blue-900 transition-all"
+                     >
+                        Browse Courses
+                     </button>
                   </div>
                </div>
-            ))}
+            ) : (
+               enrollments.map((course) => (
+                  <div key={course.EnrolledId} className="w-[350px] bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                     <div className="aspect-video relative bg-slate-100 flex items-center justify-center">
+                        {/* Placeholder for actual course image if not in backend */}
+                        <img
+                           src={course?.courseImageUrl}
+                           alt="course Image"
+                           className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
+
+                        />
+                        {/* <div className="text-[#0D2A4A] font-black text-2xl uppercase opacity-20">{course.courseName}</div> */}
+                        {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-[#0D2A4A] shadow-sm">
+                        ID: {course.courseID}
+                     </div> */}
+                     </div>
+
+                     <div className="p-6 space-y-4">
+                        <div>
+                           <h3 className="font-bold text-slate-900 text-lg">{course.courseName}</h3>
+                           <p className="text-xs text-slate-400 font-medium">Expires on: {new Date(course.expiryDate).toLocaleDateString()}</p>
+                        </div>
+
+                        {/* 4. Installment / Payment Status Logic */}
+                        {course.remainingBalance > 0 ? (
+                           <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl flex items-start gap-3">
+                              <AlertTriangle size={18} className="text-orange-600 mt-1 shrink-0" />
+                              <div>
+                                 <p className="text-xs font-bold text-orange-800">Pending Installment</p>
+                                 <p className="text-[10px] text-orange-700">Due: {course.nextDueDate || 'TBD'}</p>
+                              </div>
+                              <button className="ml-auto text-[10px] bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold">
+                                 Pay ₹{course.remainingBalance}
+                              </button>
+                           </div>
+                        ) : (
+                           <div className="flex items-center gap-2 text-green-600 text-[10px] font-bold bg-green-50 w-fit px-3 py-1 rounded-full border border-green-100">
+                              <CheckCircle size={12} /> Full Access Granted
+                           </div>
+                        )}
+
+                        <div className="pt-2 flex flex-col gap-2">
+                           <button onClick={() => navigate(`/learning-hub/${course.courseName?.replaceAll(" ", "-")}`)} className="w-full py-3 bg-[#0D2A4A] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all">
+                              Continue Learning <ChevronRight size={18} />
+                           </button>
+
+                           {/* 5. Conditional Certificate Button */}
+                           {activeTab === 'completed' && (
+                              <button
+                                 onClick={() => setShowCertificateModal(true)}
+                                 className="w-full py-3 border-2 border-[#0D2A4A] text-[#0D2A4A] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
+                              >
+                                 <Award size={18} /> Get Certificate
+                              </button>
+                           )}
+                        </div>
+                     </div>
+                  </div>
+               )))
+            }
          </div>
 
          {/* Career Support & Guidance Hub remains same as per your design... */}

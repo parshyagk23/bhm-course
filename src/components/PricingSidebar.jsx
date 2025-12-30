@@ -32,7 +32,7 @@ const PricingSidebar = (
 
     let { installment } = course;
     installment = installment?.[0] || null;
-    console.log("installment", installment)
+    // console.log("installment", installment)
 
     const totalInstallments = installment?.noOfInstallments || 1;
 
@@ -105,15 +105,20 @@ const PricingSidebar = (
                 };
 
                 try {
+                    setPaymentStatus(true)
                     const res = await savePurchase(finalPayload); // Your API call service
                     console.log(res)
                     if (res?.status == "success") {
+                        setPaymentStatus(false)
                         setPaymentStatus('success'); // Trigger Success Modal
                     } else {
+                        setPaymentStatus(false)
                         setPaymentStatus('fail');    // Trigger Failure Modal
                     }
                 } catch (err) {
                     console.error("Error saving payment:", err);
+                } finally {
+                    setPaymentStatus(false)
                 }
             },
             modal: {
@@ -219,7 +224,8 @@ const PricingSidebar = (
                         </div>
 
                         <div className="space-y-3">
-                            <button onClick={handlePburchase} className="w-full py-4 bg-[#0D2A4A] text-white rounded-xl font-extrabold text-lg flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all shadow-lg">
+                            <button onClick={handlePburchase} disabled={isInstallmentMode}
+                                className={` ${isInstallmentMode && 'bg-[#0d2a4a3d]'} w-full py-4 bg-[#0D2A4A] text-white rounded-xl font-extrabold text-lg flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all shadow-lg`}>
                                 <ShoppingCart size={20} /> Buy Now
                             </button>
                             <button

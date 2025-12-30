@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import Footer from "./components/Footer";
 import Store from "./pages/Store";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
@@ -11,6 +10,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import LearningHub from "./pages/LearningHub";
 import SecurityProvider from "./Provider/SecureProvider";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Assuming LearningHub is imported or defined
 // import LearningHub from "./pages/LearningHub"; 

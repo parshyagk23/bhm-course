@@ -18,15 +18,22 @@ const ResourceContent = ({ courseId }) => {
     const [openFolders, setOpenFolders] = useState({});
     const [contentByFolder, setContentByFolder] = useState({});
     const [loadingFolder, setLoadingFolder] = useState(null);
-
+    const [loading, setLoading] = useState(false)
     // 1️⃣ Load root data
     useEffect(() => {
         const loadData = async () => {
-            const res = await getCourseFiles(courseId);
-            const data = res.data || [];
+            try {
+                setLoading(true)
+                const res = await getCourseFiles(courseId);
+                const data = res.data || [];
+                setFolders(data.filter((i) => i.type === "folder"));
+                setRootFiles(data.filter((i) => i.type === "file" && i.folderId === ""));
 
-            setFolders(data.filter((i) => i.type === "folder"));
-            setRootFiles(data.filter((i) => i.type === "file" && i.folderId === ""));
+            } catch (error) {
+                setLoading(false)
+            } finally {
+                setLoading(false)
+            }
         };
         loadData();
     }, [courseId]);
@@ -72,7 +79,7 @@ const ResourceContent = ({ courseId }) => {
                         >
                             <div className="flex items-center gap-3 text-slate-600">
                                 <FileText size={14} className="text-[#2D61A1]" />
-                                {item.name}
+                                {"Lession " + i + 1 + ": " + item.name}
                             </div>
 
                             {openFolders[item.folderId] ? (
@@ -126,6 +133,13 @@ const ResourceContent = ({ courseId }) => {
         });
     };
 
+    if (loading) {
+        return (
+            <div className="max-w-7xl mx-auto px-4 py-10">
+                <p className="text-center text-slate-500">Loading content...</p>
+            </div>
+        );
+    }
     return (
         <div className="space-y-6">
 

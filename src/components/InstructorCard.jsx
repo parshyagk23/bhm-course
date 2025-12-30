@@ -22,7 +22,7 @@ const InstructorCard = ({ instructors = [] }) => {
 
             <div className="mb-6 sm:mb-8 text-left">
                 <div className="text-[#2D61A1] text-[10px] font-black uppercase tracking-[0.3em] mb-1">
-                    LEARN FOR THE BEST
+                    LEARN FROM THE BEST
                 </div>
                 <h3 className="text-2xl sm:text-2xl font-black text-[#0D2A4A] tracking-tight">
                     Our World-Class Instructors

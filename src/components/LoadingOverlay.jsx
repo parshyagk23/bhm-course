@@ -1,8 +1,10 @@
+import { ShoppingCart } from "lucide-react";
+
 const LoadingOverlay = ({ isProcessing }) => {
     if (!isProcessing) return null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/50 backdrop-blur-md transition-all">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-[2px] transition-all m-0">
             <div className="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center space-y-4 max-w-xs w-full animate-in zoom-in duration-200">
                 {/* Modern Spinner */}
                 <div className="relative">
