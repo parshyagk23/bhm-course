@@ -15,3 +15,8 @@ export const getEnrolledCourseContentWithFolderId = async (course_name, folderid
     const response = await api.get(`/user/enrollement/content/${course_name}/${folderid}`);
     return response.data;
 };
+
+export const updateCompletedContentList = async (enrollmentId, payload) => {
+    const response = await api.patch(`/user/enrollement/update/watched-content/${enrollmentId}`, payload);
+    return response.data;
+};

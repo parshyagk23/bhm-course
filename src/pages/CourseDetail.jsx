@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { use, useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import {
   CheckCircle, Clock, ShieldCheck,
   ChevronRight, Calendar, ShoppingCart,
@@ -28,12 +28,13 @@ const CourseDetail = () => {
   const [showPricingDrawer, setShowPricingDrawer] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
 
-  const navigate = useNavigate()
+  const user = JSON.parse(localStorage.getItem("user"))
+  const { PhoneNo } = user || ""
 
   const fetchCourseDetails = async () => {
     try {
       setLoading(true);
-      const response = await getCourseByName(id);
+      const response = await getCourseByName(id, PhoneNo);
       setCourse(response);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -275,6 +276,7 @@ const CourseDetail = () => {
               appliedCoupon={appliedCoupon}   // New
               setAppliedCoupon={setAppliedCoupon}
               discountAmount={discountAmount}
+              currentuserEnrolledCourse={course?.currentuserEnrolledCourse}
             />
             <div className="bg-slate-900 text-white p-6 rounded-2xl space-y-4">
               <h4 className="font-bold flex items-center gap-2">

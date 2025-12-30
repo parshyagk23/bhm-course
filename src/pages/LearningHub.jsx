@@ -3,7 +3,7 @@ import {
     PlayCircle, FileText, ChevronRight, Info, ChevronLeft, Folder, Sparkles, CheckCircle2
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { getEnrolledCourseContent, getEnrolledCourseContentWithFolderId } from '../services/enrollment';
+import { getEnrolledCourseContent, getEnrolledCourseContentWithFolderId, updateCompletedContentList } from '../services/enrollment';
 
 const LearningHub = () => {
     const videoRef = useRef(null);
@@ -11,6 +11,7 @@ const LearningHub = () => {
 
     const [modules, setModules] = useState([]);
     const [rootModules, setRootModules] = useState([])
+    const [enrolledId, setEnrolledId] = useState([])
     const [loading, setLoading] = useState(false);
     const [activeContent, setActiveContent] = useState(null);
     const [history, setHistory] = useState([{ id: null, name: 'Curriculum' }]);
@@ -26,6 +27,11 @@ const LearningHub = () => {
                 response = await getEnrolledCourseContent(coursename);
                 setRootModules(response.data)
             }
+            setEnrolledId(response?.enrollmentId)
+            const completedIds = new Set(
+                (response?.completedcontent || []).map(item => item.contentId)
+            );
+            setCompletedItems(completedIds);
             if (response.status && response.data) setModules(response.data);
         } catch (error) {
             console.error("Error fetching content:", error);
@@ -71,10 +77,25 @@ const LearningHub = () => {
         }
     };
 
-    const handleVideoEnded = () => {
-        if (activeContent?.videoId) {
-            setCompletedItems(prev => new Set([...prev, activeContent.videoId]));
-            handleNext();
+    const handleVideoEnded = async () => {
+        try {
+            if (activeContent?.videoId) {
+                const payload = {
+                    contentId: activeContent?.videoId,
+                    type: "video"
+                };
+                const response = await updateCompletedContentList(enrolledId, payload);
+
+                // FIX: Convert the returned array back to a Set of IDs
+                const updatedIds = new Set(
+                    (response || []).map(item => item.contentId)
+                );
+                setCompletedItems(updatedIds);
+
+                handleNext();
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -109,6 +130,7 @@ const LearningHub = () => {
         }
     };
 
+    console.log(completedItems)
     return (
         <div className="flex h-[90vh] bg-slate-50 rounded-[40px] overflow-hidden border border-slate-100 shadow-inner my-8">
 
@@ -224,7 +246,7 @@ const LearningHub = () => {
                         </div>
                     ) : (
                         modules.map((item) => {
-                            const isDone = completedItems.has(item.videoId);
+                            const isDone = completedItems?.has(item?.videoId);
                             const isCurrent = (item.videoId || item.fileId) === (activeContent?.videoId || activeContent?.fileId);
                             return (
                                 <button key={item.videoId || item.folderId || item.name} onClick={() => handleModuleClick(item)} className={`cursor-pointer w-full flex items-center gap-4 px-6 py-4 border-b border-slate-50 transition-all hover:bg-slate-50 group ${isCurrent ? 'bg-blue-50/50' : ''}`}>

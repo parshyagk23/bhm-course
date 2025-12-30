@@ -22,8 +22,8 @@ export const getFeaturedCourses = async () => {
  * Get course details by course name
  * GET /user/courses/get/{coursename}
  */
-export const getCourseByName = async (courseName) => {
-    const response = await api.get(`/user/courses/get/${courseName}`);
+export const getCourseByName = async (courseName, phone) => {
+    const response = await api.get(`/user/courses/get/${courseName}?phoneNo=${phone || ""}`);
     return response.data;
 };
 

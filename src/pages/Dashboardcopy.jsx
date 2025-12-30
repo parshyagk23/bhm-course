@@ -36,6 +36,14 @@ const DashboardCopy = () => {
          setLoading(false);
       }
    }
+   const filteredEnrollments = enrollments.filter(course => {
+      const completedVideos = course?.completedcontent?.filter(item => item.type === 'video').length || 0;
+      const totalVideos = course?.VideoCount || 1;
+      const isFinished = completedVideos >= totalVideos;
+
+      if (activeTab === 'completed') return isFinished;
+      return !isFinished; // 'ongoing' tab
+   });
    useEffect(() => {
       // Simulating the API response you provided
       fetchEnrolledCourses()
@@ -73,84 +81,129 @@ const DashboardCopy = () => {
 
          {/* 3. Dynamic Course Grid */}
          <div className="flex flex-wrap gap-8">
-            {enrollments.length === 0 ? (
-               <div className='w-full flex justify-center' >
-                  <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border border-dashed border-slate-200">
-                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-6">
-                        <BookOpen size={40} />
-                     </div>
-                     <h2 className="text-xl font-bold text-[#0D2A4A]">No Courses Found</h2>
-                     <p className="text-slate-500 mb-8 text-center max-w-xs">
-                        You haven't enrolled in any courses yet. Start your learning journey today!
-                     </p>
-                     <button
-                        onClick={() => navigate('/stores')}
-                        className="px-8 py-3 bg-[#0D2A4A] text-white rounded-xl font-bold shadow-lg hover:bg-blue-900 transition-all"
-                     >
-                        Browse Courses
-                     </button>
-                  </div>
+            {filteredEnrollments.length === 0 ? (
+               <div className='w-full flex justify-center'>
+                  {/* Empty state markup */}
+                  <h2 className="text-xl font-bold text-[#0D2A4A]">No {activeTab} courses</h2>
                </div>
             ) : (
-               enrollments.map((course) => (
-                  <div key={course.EnrolledId} className="w-[350px] bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
-                     <div className="aspect-video relative bg-slate-100 flex items-center justify-center">
-                        {/* Placeholder for actual course image if not in backend */}
-                        <img
-                           src={course?.courseImageUrl}
-                           alt="course Image"
-                           className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
+               filteredEnrollments.map((course) => {
+                  // 1. Basic Progress Calculations
+                  const completedVideos = course?.completedcontent?.filter(item => item.type === 'video').length || 0;
+                  const totalVideos = course?.VideoCount || 1;
+                  const progressPercentage = Math.round((completedVideos / totalVideos) * 100);
 
-                        />
-                        {/* <div className="text-[#0D2A4A] font-black text-2xl uppercase opacity-20">{course.courseName}</div> */}
-                        {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-[#0D2A4A] shadow-sm">
-                        ID: {course.courseID}
-                     </div> */}
-                     </div>
+                  // 2. Define the missing variable
+                  const hasPendingInstallment = course.remainingBalance > 0;
 
-                     <div className="p-6 space-y-4">
-                        <div>
-                           <h3 className="font-bold text-slate-900 text-lg">{course.courseName}</h3>
-                           <p className="text-xs text-slate-400 font-medium">Expires on: {new Date(course.expiryDate).toLocaleDateString()}</p>
-                        </div>
+                  // 3. Date Comparison Logic
+                  const today = new Date();
+                  const expiryDate = new Date(course.expiryDate);
+                  const dueDate = course.nextDueDate ? new Date(course.nextDueDate) : null;
 
-                        {/* 4. Installment / Payment Status Logic */}
-                        {course.remainingBalance > 0 ? (
-                           <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl flex items-start gap-3">
-                              <AlertTriangle size={18} className="text-orange-600 mt-1 shrink-0" />
-                              <div>
-                                 <p className="text-xs font-bold text-orange-800">Pending Installment</p>
-                                 <p className="text-[10px] text-orange-700">Due: {course.nextDueDate || 'TBD'}</p>
+                  // 4. Status Flags
+                  const isExpired = expiryDate < today;
+
+                  // Only block access if the status is PARTIAL and the date has actually passed
+                  const isInstallmentOverdue =
+                     course.paymentStatus === "PARTIAL" &&
+                     dueDate &&
+                     today > dueDate;
+
+                  // 5. Final Access Toggle
+                  const isAccessDisabled = isExpired || isInstallmentOverdue;
+
+                  return (
+                     <div key={course.EnrolledId} className={`w-[350px] bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm transition-all ${isAccessDisabled ? 'opacity-75 grayscale-[0.5]' : 'hover:shadow-md'}`}>
+
+                        <div className="aspect-video relative bg-slate-100">
+                           <img
+                              src={course?.courseImageUrl}
+                              alt="course"
+                              className='w-full h-full object-cover'
+                           />
+                           {/* Status Overlays */}
+                           {isExpired && (
+                              <div className="absolute inset-0 bg-red-600/20 backdrop-blur-[2px] flex items-center justify-center">
+                                 <span className="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Expired</span>
                               </div>
-                              <button className="ml-auto text-[10px] bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold">
-                                 Pay ₹{course.remainingBalance}
-                              </button>
-                           </div>
-                        ) : (
-                           <div className="flex items-center gap-2 text-green-600 text-[10px] font-bold bg-green-50 w-fit px-3 py-1 rounded-full border border-green-100">
-                              <CheckCircle size={12} /> Full Access Granted
-                           </div>
-                        )}
-
-                        <div className="pt-2 flex flex-col gap-2">
-                           <button onClick={() => navigate(`/learning-hub/${course.courseName?.replaceAll(" ", "-")}`)} className="w-full py-3 bg-[#0D2A4A] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#2D61A1] transition-all">
-                              Continue Learning <ChevronRight size={18} />
-                           </button>
-
-                           {/* 5. Conditional Certificate Button */}
-                           {activeTab === 'completed' && (
-                              <button
-                                 onClick={() => setShowCertificateModal(true)}
-                                 className="w-full py-3 border-2 border-[#0D2A4A] text-[#0D2A4A] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
-                              >
-                                 <Award size={18} /> Get Certificate
-                              </button>
                            )}
                         </div>
+
+                        <div className="p-6 space-y-4">
+                           <div>
+                              <h3 className="font-bold text-slate-900 text-lg">{course.courseName}</h3>
+                              <p className={`text-xs font-medium ${isExpired ? 'text-red-500' : 'text-slate-400'}`}>
+                                 {isExpired ? 'Expired on: ' : 'Expires on: '}
+                                 {new Date(course.expiryDate).toLocaleDateString()}
+                              </p>
+                           </div>
+
+                           {/* Progress Bar */}
+                           <div className="space-y-2">
+                              <div className="flex justify-between items-center text-[10px] font-bold uppercase">
+                                 <span className="text-slate-500">Progress</span>
+                                 <span className="text-blue-600">{progressPercentage}%</span>
+                              </div>
+                              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                 <div
+                                    className="h-full bg-blue-600 rounded-full transition-all duration-1000"
+                                    style={{ width: `${progressPercentage}%` }}
+                                 />
+                              </div>
+                           </div>
+
+                           {/* Payment Status */}
+                           {hasPendingInstallment ? (
+                              <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl flex items-start gap-3">
+                                 <AlertTriangle size={18} className="text-orange-600 mt-1 shrink-0" />
+                                 <div className="flex-1">
+                                    <p className="text-xs font-bold text-orange-800">Pending Installment</p>
+                                    <p className="text-[10px] text-orange-700">Due: {course.nextDueDate || 'TBD'}</p>
+                                 </div>
+                                 <button className="text-[10px] bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-orange-700">
+                                    Pay ₹{course.remainingBalance}
+                                 </button>
+                              </div>
+                           ) : (
+                              <div className="flex items-center gap-2 text-green-600 text-[10px] font-bold bg-green-50 w-fit px-3 py-1 rounded-full border border-green-100">
+                                 <CheckCircle size={12} /> Access Active
+                              </div>
+                           )}
+
+                           <div className="pt-2 flex flex-col gap-2">
+                              {/* Continue Learning Button - Disabled if expired or pending installment */}
+                              <button
+                                 disabled={isAccessDisabled}
+                                 onClick={() => navigate(`/learning-hub/${course.courseName?.replaceAll(" ", "-")}`)}
+                                 className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all 
+                                    ${isAccessDisabled
+                                       ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                       : 'bg-[#0D2A4A] text-white hover:bg-blue-900 shadow-md'}`}
+                              >
+                                 {isExpired ? 'Access Expired' : hasPendingInstallment ? 'Pay to Unlock' : 'Continue Learning'}
+                                 {!isAccessDisabled && <ChevronRight size={18} />}
+                              </button>
+
+                              {/* Certificate Button */}
+                              {activeTab === 'completed' && (
+                                 <button
+                                    disabled={hasPendingInstallment}
+                                    onClick={() => setShowCertificateModal(true)}
+                                    className={`w-full py-3 border-2 rounded-xl font-bold flex items-center justify-center gap-2 transition-all
+                                       ${hasPendingInstallment
+                                          ? 'border-slate-200 text-slate-300 cursor-not-allowed'
+                                          : 'border-[#0D2A4A] text-[#0D2A4A] hover:bg-slate-50'}`}
+                                 >
+                                    <Award size={18} /> Get Certificate
+                                 </button>
+                              )}
+                           </div>
+                        </div>
                      </div>
-                  </div>
-               )))
-            }
+                  );
+               })
+            )}
          </div>
 
          {/* Career Support & Guidance Hub remains same as per your design... */}
