@@ -280,8 +280,8 @@ const PricingSidebar = (
                                     }}
                                     disabled={currentuserEnrolledCourse}
                                     className={`w-full py-2 rounded-lg font-bold text-xs transition-all ${currentuserEnrolledCourse
-                                            ? "bg-slate-200 text-slate-400 cursor-not-allowed" // Disabled Look
-                                            : "bg-yellow-500 text-white hover:bg-yellow-600"  // Active Look
+                                        ? "bg-slate-200 text-slate-400 cursor-not-allowed" // Disabled Look
+                                        : "bg-yellow-500 text-white hover:bg-yellow-600"  // Active Look
                                         }`}
                                 >
                                     Pay 1st Installment ₹{installmentAmount}

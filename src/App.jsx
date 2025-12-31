@@ -37,7 +37,7 @@ function App() {
   };
 
   return (
-    <SecurityProvider>
+    // <SecurityProvider>
       <div className="min-h-screen flex flex-col">
         <Toaster position="top-right" />
         <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
@@ -91,7 +91,7 @@ function App() {
 
         <Footer />
       </div>
-    </SecurityProvider>
+    // </SecurityProvider>
   );
 }
 

@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { getEnrolledCourseContent, getEnrolledCourseContentWithFolderId, updateCompletedContentList } from '../services/enrollment';
+import DocViewer, { DocViewerRenderers } from 'react-doc-viewer';
 
 const LearningHub = () => {
     const videoRef = useRef(null);
@@ -79,21 +80,21 @@ const LearningHub = () => {
 
     const handleVideoEnded = async () => {
         try {
-            if (activeContent?.videoId) {
-                const payload = {
-                    contentId: activeContent?.videoId,
-                    type: "video"
-                };
-                const response = await updateCompletedContentList(enrolledId, payload);
 
-                // FIX: Convert the returned array back to a Set of IDs
-                const updatedIds = new Set(
-                    (response || []).map(item => item.contentId)
-                );
-                setCompletedItems(updatedIds);
+            const payload = {
+                contentId: activeContent?.type == 'video' ? activeContent?.videoId : activeContent?.fileId,
+                type: activeContent?.type
+            };
+            const response = await updateCompletedContentList(enrolledId, payload);
 
-                handleNext();
-            }
+            // FIX: Convert the returned array back to a Set of IDs
+            const updatedIds = new Set(
+                (response || []).map(item => item.contentId)
+            );
+            setCompletedItems(updatedIds);
+
+            handleNext();
+
         } catch (error) {
             console.log(error);
         }
@@ -130,7 +131,8 @@ const LearningHub = () => {
         }
     };
 
-    console.log(completedItems)
+    console.log(activeContent)
+
     return (
         <div className="flex h-[90vh] bg-slate-50 rounded-[40px] overflow-hidden border border-slate-100 shadow-inner my-8">
 
@@ -158,11 +160,17 @@ const LearningHub = () => {
                                 autoPlay
                             />
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-full text-white">
-                                <FileText size={48} className="text-slate-500 mb-4" />
-                                <p className="font-bold text-lg">{activeContent.name}</p>
+                            /* This handles PDF, DOCX, CSV, etc. */
+                            <div onContextMenu={(e) => e.preventDefault()} className="w-full h-full border rounded-lg overflow-hidden">
+                                <iframe
+                                    src={`${activeContent.fileUrl}#toolbar=0`}
+                                    className="w-full h-full"
+                                    title="Document Viewer"
+                                    onContextMenu={(e) => e.preventDefault()}
+                                />
                             </div>
                         )
+
                     ) : (
                         <div className="flex flex-col items-center justify-center text-slate-400">
                             <Sparkles size={40} className="text-blue-500 mb-4" />
@@ -170,7 +178,15 @@ const LearningHub = () => {
                         </div>
                     )}
                 </div>
-
+                {activeContent?.type === 'file' && <div className='flex justify-end items-center mt-5 mr-4' >
+                    <button
+                        onClick={handleVideoEnded}
+                        disabled={completedItems?.has(activeContent?.fileId)}
+                        className={` ${completedItems?.has(activeContent?.fileId) ? "bg-green-200 text-green-600" : "text-green-100 bg-green-600"} cursor-pointer flex items-center gap-2 text-sm font-bold  disabled:opacity-20 transition-all px-4 py-2 rounded-xl `}
+                    >
+                        <CheckCircle2 size={18} />  {completedItems?.has(activeContent?.fileId) ? "Completed" : "Mark as Completed"}
+                    </button>
+                </div>}
                 {/* 2. PERSISTENT NAVIGATION BAR (Prev/Next) */}
                 <div className="bg-white border-y border-slate-100 px-8 py-5 flex justify-between items-center shadow-sm z-10">
                     <button
@@ -246,12 +262,12 @@ const LearningHub = () => {
                         </div>
                     ) : (
                         modules.map((item) => {
-                            const isDone = completedItems?.has(item?.videoId);
+                            const isDone = completedItems?.has(item?.videoId || item.fileId);
                             const isCurrent = (item.videoId || item.fileId) === (activeContent?.videoId || activeContent?.fileId);
                             return (
                                 <button key={item.videoId || item.folderId || item.name} onClick={() => handleModuleClick(item)} className={`cursor-pointer w-full flex items-center gap-4 px-6 py-4 border-b border-slate-50 transition-all hover:bg-slate-50 group ${isCurrent ? 'bg-blue-50/50' : ''}`}>
                                     <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all ${isDone ? 'bg-green-100 text-green-600' : isCurrent ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                        {isDone ? <CheckCircle2 size={18} /> : item.type === 'folder' ? <Folder size={18} /> : <PlayCircle size={18} />}
+                                        {isDone ? <CheckCircle2 size={18} /> : item.type === 'folder' ? <Folder size={18} /> : item?.type == "file" ? <FileText size={18} /> : <PlayCircle size={18} />}
                                     </div>
                                     <div className="flex-1 text-left min-w-0">
                                         <p className={`text-sm font-bold truncate ${isCurrent ? 'text-blue-900' : 'text-slate-700'}`}>{item?.name || item?.title}</p>
