@@ -359,6 +359,7 @@ const CourseDetail = () => {
               appliedCoupon={appliedCoupon}   // New
               setAppliedCoupon={setAppliedCoupon}
               discountAmount={discountAmount}
+              currentuserEnrolledCourse={course?.currentuserEnrolledCourse}
             />
           </div>
         </div>
