@@ -15,7 +15,7 @@ const LearningHub = () => {
     const [enrolledId, setEnrolledId] = useState([])
     const [loading, setLoading] = useState(false);
     const [activeContent, setActiveContent] = useState(null);
-    const [history, setHistory] = useState([{ id: null, name: 'Curriculum' }]);
+    const [history, setHistory] = useState([]);
     const [completedItems, setCompletedItems] = useState(new Set());
 
     const fetchCourseContent = async (folderId = null) => {
@@ -131,7 +131,9 @@ const LearningHub = () => {
         }
     };
 
-    console.log(activeContent)
+    console.log(currentIndex)
+    console.log(modules.length)
+    console.log(history)
 
     return (
         <div className="flex h-[90vh] bg-slate-50 rounded-[40px] overflow-hidden border border-slate-100 shadow-inner my-8">
@@ -200,7 +202,7 @@ const LearningHub = () => {
                     <button
                         onClick={handleNext}
                         disabled={loading || (currentIndex >= modules.length - 1 && history.length === 1)}
-                        className="cursor-pointer flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 disabled:opacity-20 transition-all"
+                        className={`${(currentIndex >= modules.length - 1 && history.length === 1) ? "bg-gray-600 text-white" : "bg-blue-600 text-white"} cursor-pointer flex items-center gap-2 px-8 py-3  rounded-2xl text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 disabled:opacity-20 transition-all`}
                     >
                         Next Lesson <ChevronRight size={20} />
                     </button>
