@@ -109,7 +109,8 @@ const DashboardCopy = () => {
                      course.paymentStatus === "PARTIAL" &&
                      dueDate &&
                      today > dueDate;
-
+                  console.log(isInstallmentOverdue)
+                  console.log(hasPendingInstallment)
                   // 5. Final Access Toggle
                   const isAccessDisabled = isExpired || isInstallmentOverdue;
 
@@ -181,7 +182,7 @@ const DashboardCopy = () => {
                                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                        : 'bg-[#0D2A4A] text-white hover:bg-blue-900 shadow-md'}`}
                               >
-                                 {isExpired ? 'Access Expired' : hasPendingInstallment ? 'Pay to Unlock' : 'Continue Learning'}
+                                 {isExpired ? 'Access Expired' : isInstallmentOverdue ? 'Pay to Unlock' : 'Continue Learning'}
                                  {!isAccessDisabled && <ChevronRight size={18} />}
                               </button>
 
