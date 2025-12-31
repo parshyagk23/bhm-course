@@ -109,8 +109,6 @@ const DashboardCopy = () => {
                      course.paymentStatus === "PARTIAL" &&
                      dueDate &&
                      today > dueDate;
-                  console.log(isInstallmentOverdue)
-                  console.log(hasPendingInstallment)
                   // 5. Final Access Toggle
                   const isAccessDisabled = isExpired || isInstallmentOverdue;
 
