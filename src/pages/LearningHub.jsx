@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { getEnrolledCourseContent, getEnrolledCourseContentWithFolderId, updateCompletedContentList } from '../services/enrollment';
-import DocViewer, { DocViewerRenderers } from 'react-doc-viewer';
+
 
 const LearningHub = () => {
     const videoRef = useRef(null);
