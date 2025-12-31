@@ -223,9 +223,9 @@ const DashboardCopy = () => {
                      <p className="text-slate-700 font-medium text-sm leading-relaxed mb-8">
                         Stay updated with the latest job openings, internship opportunities, and career tips by joining our official WhatsApp group.
                      </p>
-                     <button className="mt-auto px-6 py-2.5 bg-[#1E293B] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-[#2D61A1] transition-all shadow-md group">
+                     <a href='https://chat.whatsapp.com/EsULRxllqsv0XfYD5oRB02' target='_blank' className="mt-auto px-6 py-2.5 bg-[#1E293B] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-[#2D61A1] transition-all shadow-md group">
                         Join Now <Play size={14} className="fill-white group-hover:translate-x-0.5 transition-transform" />
-                     </button>
+                     </a>
                   </div>
                </div>
             </div>
