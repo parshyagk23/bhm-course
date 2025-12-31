@@ -311,7 +311,7 @@ const LearningHub = () => {
                         disabled={loading || (history.length === 0 && currentIndex <= 0)}
                         className="cursor-pointer flex items-center gap-1 lg:gap-2 text-xs lg:text-sm font-bold text-slate-600 hover:text-blue-600 disabled:opacity-20 transition-all"
                     >
-                        <ChevronLeft size={20} /> <span className="hidden sm:inline">Previous</span>
+                        <ChevronLeft size={20} /> <span className="">Previous</span>
                     </button>
 
                     <button
