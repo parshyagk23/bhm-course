@@ -169,7 +169,9 @@ const LearningHub = () => {
             const response = await updateCompletedContentList(enrolledId, payload);
             const updatedIds = new Set((response || []).map(item => item.contentId));
             setCompletedItems(updatedIds);
-            handleNext();
+            setTimeout(() => {
+                handleNext();
+            }, 2000);
         } catch (error) {
             console.log(error);
         }
