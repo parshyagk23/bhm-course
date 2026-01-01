@@ -92,9 +92,10 @@ const PricingSidebar = (
         };
 
         // 2. Razorpay Options
+        const amountInPaise = Math.round(parseFloat(currentPayableAmount) * 100);
         const options = {
             key: "rzp_test_RQDayzrkVov4Ix",
-            amount: currentPayableAmount * 100, // Razorpay works in paise (multiply by 100)
+            amount: amountInPaise, // Razorpay works in paise (multiply by 100)
             currency: countrycode == "+91" ? "INR" : "USD",
             name: "Bhavanam SC2C",
             description: `Purchase ${course?.courseName}`,
@@ -106,20 +107,20 @@ const PricingSidebar = (
                 };
 
                 try {
-                    setPaymentStatus(true)
+                    setIsProcessing(true)
                     const res = await savePurchase(finalPayload); // Your API call service
                     console.log(res)
                     if (res?.status == "success") {
-                        setPaymentStatus(false)
+                        setIsProcessing(false)
                         setPaymentStatus('success'); // Trigger Success Modal
                     } else {
-                        setPaymentStatus(false)
+                        setIsProcessing(false)
                         setPaymentStatus('fail');    // Trigger Failure Modal
                     }
                 } catch (err) {
                     console.error("Error saving payment:", err);
                 } finally {
-                    setPaymentStatus(false)
+                    setIsProcessing(false)
                 }
             },
             modal: {
